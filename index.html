@@ -210,7 +210,8 @@
             z-index: 1;
         }
 
-        .reward-panel {
+        .reward-panel,
+        .dashboard-panel {
             padding: 22px;
             margin-bottom: 20px;
         }
@@ -301,30 +302,36 @@
             z-index: 0;
         }
 
-        .rail-forecast-fill {
-            width: 0%;
-            height: 100%;
-            border-radius: inherit;
-            background: linear-gradient(90deg, rgba(55, 200, 255, 0.75), rgba(119, 92, 255, 0.72));
-            transition: width 0.35s ease;
-            position: absolute;
-            inset: 0 auto 0 0;
-            z-index: 1;
-        }
-
+        .rail-forecast-fill,
         .rail-fill {
             width: 0%;
             height: 100%;
             border-radius: inherit;
-            background: linear-gradient(90deg, #35c977, #ffe45c, #ff9f38);
-            transition: width 0.35s ease;
+            transition:
+                width 0.35s ease,
+                left 0.35s ease;
             position: absolute;
-            inset: 0 auto 0 0;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .rail-fill {
+            background: linear-gradient(90deg, #35c977, #ffe45c, #ff9f38);
             z-index: 2;
         }
 
+        .rail-forecast-fill {
+            background: linear-gradient(90deg, #37c8ff, #775cff);
+            z-index: 3;
+            box-shadow:
+                0 0 10px rgba(55, 200, 255, 0.55),
+                0 0 16px rgba(119, 92, 255, 0.35);
+        }
+
         .rail-fill::after,
-        .rail-forecast-fill::after {
+        .rail-forecast-fill::after,
+        .stage-fill::after {
             content: "";
             position: absolute;
             inset: 0;
@@ -443,18 +450,6 @@
             background: linear-gradient(90deg, #35c977, #ffe45c, #ff9f38);
             transition: width 0.35s ease;
             position: relative;
-        }
-
-        .stage-fill::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.46), transparent);
-            animation: shine 2.1s ease-in-out infinite;
-        }
-
-        .dashboard-panel {
-            padding: 22px;
         }
 
         .dashboard-grid {
@@ -722,7 +717,8 @@
                 font-size: 13px;
             }
 
-            .reward-panel {
+            .reward-panel,
+            .dashboard-panel {
                 padding: 14px;
                 margin-bottom: 12px;
             }
@@ -807,10 +803,6 @@
 
             .stage-bar {
                 height: 14px;
-            }
-
-            .dashboard-panel {
-                padding: 14px;
             }
 
             .dashboard-grid {
@@ -922,13 +914,12 @@
 
             <p class="subtitle">
                 輸入自己與隊友目前的分數，以及雙方剩餘雪幣，系統會自動加總隊伍分數，
-                判斷下一階段獎勵，並預估把剩餘雪幣跑完後可以到達哪一階段。
+                判斷下一階段獎勵，並預估把剩餘雪幣跑完後可以到達的估計總分。
             </p>
 
             <div class="fixed-rate">
                 ❄️ 固定換算：1 雪幣 ≈ 26 分
             </div>
-
         </section>
 
         <section class="panel reward-panel">
@@ -975,7 +966,7 @@
                 <div class="input-area">
                     <div class="block-title">
                         <h3>隊伍分數</h3>
-                        <small>輸入後即時計算</small>
+                        <small>輸入後即時計算並自動儲存</small>
                     </div>
 
                     <div class="input-grid">
@@ -1033,8 +1024,8 @@
 
                     <div class="metric-grid">
                         <div class="metric good">
-                            <div class="name">目前已達階段</div>
-                            <div class="value" id="currentLevelText">0 / 15</div>
+                            <div class="name">目前總分</div>
+                            <div class="value" id="currentTotalScoreText">0</div>
                         </div>
 
                         <div class="metric warn">
@@ -1043,7 +1034,7 @@
                         </div>
 
                         <div class="metric bad">
-                            <div class="name">實際需準備雪幣</div>
+                            <div class="name">距離下一階段需準備雪幣</div>
                             <div class="value" id="actualCoinsText">154</div>
                         </div>
 
@@ -1058,13 +1049,23 @@
                         </div>
 
                         <div class="metric forecast">
-                            <div class="name">預估可達階段</div>
-                            <div class="value" id="forecastLevelText">0 / 15</div>
+                            <div class="name">估計總分</div>
+                            <div class="value" id="forecastTotalScoreText">0</div>
                         </div>
 
                         <div class="metric warn wide">
                             <div class="name">預估後距離下一階段</div>
                             <div class="value" id="forecastNeedText">4,000 分 / 154 幣</div>
+                        </div>
+
+                        <div class="metric forecast">
+                            <div class="name">目前已達階段</div>
+                            <div class="value" id="currentLevelText">0 / 15</div>
+                        </div>
+
+                        <div class="metric forecast">
+                            <div class="name">預估可達階段</div>
+                            <div class="value" id="forecastLevelText">0 / 15</div>
                         </div>
                     </div>
                 </div>
@@ -1078,6 +1079,7 @@
 
     <script>
         const POINT_PER_COIN = 26;
+        const STORAGE_KEY = "snowAvalancheProgressCalculatorV3";
 
         const rewards = [
             { threshold: 4000, reward: "金槌", icon: "🔨" },
@@ -1098,6 +1100,7 @@
         ];
 
         const inputIds = ["myScore", "teammateScore", "myCoins", "teammateCoins"];
+        const maxThreshold = rewards[rewards.length - 1].threshold;
 
         function getNumber(id) {
             const value = Number(document.getElementById(id).value);
@@ -1138,12 +1141,11 @@
 
             const completed = nextReward === null;
             const previousThreshold = currentLevel > 0 ? rewards[currentLevel - 1].threshold : 0;
-            const nextThreshold = completed ? rewards[rewards.length - 1].threshold : nextReward.threshold;
+            const nextThreshold = completed ? maxThreshold : nextReward.threshold;
 
             let needScore = 0;
             let actualCoins = 0;
             let stagePercent = 100;
-            let railPercent = 100;
 
             if (!completed) {
                 needScore = Math.max(0, nextThreshold - score);
@@ -1153,7 +1155,22 @@
                 const stageNow = score - previousThreshold;
 
                 stagePercent = clamp((stageNow / stageTotal) * 100, 0, 100);
-                railPercent = clamp(((currentLevel + stagePercent / 100) / rewards.length) * 100, 0, 100);
+            }
+
+            /*
+                重要：
+                因為畫面上的 15 個獎勵圖示是「等距排列」，
+                所以跑條也必須依照「階段位置 + 階段內百分比」計算。
+                例如 110,000 分會落在 90,000 的 2.5K 能量與 135,000 的雪花球箱之間。
+            */
+            let railPercent = 100;
+
+            if (!completed) {
+                railPercent = clamp(
+                    ((currentLevel + stagePercent / 100) / rewards.length) * 100,
+                    0,
+                    100
+                );
             }
 
             return {
@@ -1213,10 +1230,12 @@
             const forecastData = getProgressData(forecastScore);
 
             updateResult({
+                totalScore,
+                remainingCoins,
                 forecastAddScore,
+                forecastScore,
                 currentData,
-                forecastData,
-                forecastScore
+                forecastData
             });
 
             renderRewardRail(
@@ -1233,8 +1252,23 @@
             const current = data.currentData;
             const forecast = data.forecastData;
 
-            document.getElementById("railFill").style.width = current.railPercent + "%";
-            document.getElementById("railForecastFill").style.width = forecast.railPercent + "%";
+            const currentRailPercent = current.railPercent;
+            const forecastRailPercent = forecast.railPercent;
+            const forecastExtraPercent = Math.max(0, forecastRailPercent - currentRailPercent);
+
+            const railFill = document.getElementById("railFill");
+            const railForecastFill = document.getElementById("railForecastFill");
+
+            railFill.style.left = "0%";
+            railFill.style.width = currentRailPercent + "%";
+
+            /*
+                預估跑條只畫「目前進度之後，到預估可達位置」的差額區段。
+                這樣藍紫色不會被目前進度條蓋住。
+            */
+            railForecastFill.style.left = currentRailPercent + "%";
+            railForecastFill.style.width = forecastExtraPercent + "%";
+
             document.getElementById("stageFill").style.width = current.stagePercent + "%";
 
             document.getElementById("stagePercent").textContent =
@@ -1247,11 +1281,14 @@
                 formatDecimal(forecast.railPercent, 1) +
                 "%";
 
-            updateCurrentSection(current);
+            updateCurrentSection(data, current);
             updateForecastSection(data, forecast);
         }
 
-        function updateCurrentSection(current) {
+        function updateCurrentSection(data, current) {
+            document.getElementById("currentTotalScoreText").textContent =
+                formatFloor(data.totalScore);
+
             document.getElementById("currentLevelText").textContent =
                 current.currentLevel + " / " + rewards.length;
 
@@ -1280,6 +1317,9 @@
             document.getElementById("forecastAddScoreText").textContent =
                 formatFloor(data.forecastAddScore);
 
+            document.getElementById("forecastTotalScoreText").textContent =
+                formatFloor(data.forecastScore);
+
             document.getElementById("forecastLevelText").textContent =
                 forecast.currentLevel + " / " + rewards.length;
 
@@ -1302,6 +1342,8 @@
             document.getElementById("teammateScore").value = 0;
             document.getElementById("myCoins").value = 0;
             document.getElementById("teammateCoins").value = 0;
+
+            localStorage.removeItem(STORAGE_KEY);
             calculate();
         }
 
@@ -1312,11 +1354,11 @@
                 state[id] = document.getElementById(id).value;
             });
 
-            localStorage.setItem("snowAvalancheProgressCalculatorStacked", JSON.stringify(state));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         }
 
         function loadState() {
-            const raw = localStorage.getItem("snowAvalancheProgressCalculatorStacked");
+            const raw = localStorage.getItem(STORAGE_KEY);
 
             if (!raw) return;
 
