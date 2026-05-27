@@ -154,6 +154,26 @@
             background: radial-gradient(circle, rgba(255, 212, 90, 0.62), transparent 65%);
         }
 
+        .top-actions {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .language-select {
+            min-height: 38px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(39, 110, 233, 0.18);
+            background: rgba(255, 255, 255, 0.78);
+            color: var(--deep-blue);
+            font-weight: 950;
+            outline: none;
+        }
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -528,6 +548,7 @@
             font-weight: 950;
             background: linear-gradient(135deg, #59c5ff, #775cff);
             box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45);
+            font-size: 12px;
         }
 
         .mini-avatar.friend {
@@ -696,6 +717,15 @@
                 top: -80px;
             }
 
+            .top-actions {
+                align-items: flex-start;
+            }
+
+            .language-select {
+                max-width: 112px;
+                font-size: 12px;
+            }
+
             .badge {
                 padding: 6px 10px;
                 font-size: 12px;
@@ -845,7 +875,7 @@
                 width: 26px;
                 height: 26px;
                 border-radius: 9px;
-                font-size: 13px;
+                font-size: 11px;
             }
 
             label {
@@ -908,30 +938,41 @@
 
     <main class="app">
         <section class="hero">
-            <div class="badge">❄️ 雪崩派對</div>
+            <div class="top-actions">
+                <div class="badge" data-i18n="badge">❄️ 雪崩派對</div>
 
-            <h1>進度與雪幣期望計算機</h1>
+                <select id="languageSelect" class="language-select" aria-label="Language">
+                    <option value="zh-Hant">繁體中文</option>
+                    <option value="en">English</option>
+                    <option value="vi">Tiếng Việt</option>
+                </select>
+            </div>
 
-            <p class="subtitle">
+            <h1 data-i18n="heroTitle">進度與雪幣期望計算機</h1>
+
+            <p class="subtitle" data-i18n="subtitle">
                 輸入自己與隊友目前的分數，以及雙方剩餘雪幣，系統會自動加總隊伍分數，
                 判斷下一階段獎勵，並預估把剩餘雪幣跑完後可以到達的估計總分。
             </p>
 
-            <div class="fixed-rate">
+            <div class="fixed-rate" data-i18n="fixedRate">
                 ❄️ 固定換算：1 雪幣 ≈ 26 分
             </div>
         </section>
 
         <section class="panel reward-panel">
             <div class="section-title">
-                <h2>獎勵進度</h2>
+                <h2 data-i18n="rewardProgress">獎勵進度</h2>
                 <small id="railStatusText">目前 0%，預估 0%</small>
             </div>
 
             <div class="legend-row">
-                <span class="legend"><span class="legend-dot current"></span>目前已跑進度</span>
-                <span class="legend"><span class="legend-dot forecast"></span>剩餘雪幣預估可達</span>
-                <span class="legend"><span class="legend-dot next"></span>目前下一階段</span>
+                <span class="legend"><span class="legend-dot current"></span><span
+                        data-i18n="legendCurrent">目前已跑進度</span></span>
+                <span class="legend"><span class="legend-dot forecast"></span><span
+                        data-i18n="legendForecast">剩餘雪幣預估可達</span></span>
+                <span class="legend"><span class="legend-dot next"></span><span
+                        data-i18n="legendNext">目前下一階段</span></span>
             </div>
 
             <div class="reward-rail-wrap">
@@ -959,31 +1000,31 @@
 
         <section class="panel dashboard-panel">
             <div class="section-title">
-                <h2>隊伍分數與計算結果</h2>
+                <h2 data-i18n="teamScoreAndResult">隊伍分數與計算結果</h2>
             </div>
 
             <div class="dashboard-grid">
                 <div class="input-area">
                     <div class="block-title">
-                        <h3>隊伍分數</h3>
-                        <small>輸入後即時計算並自動儲存</small>
+                        <h3 data-i18n="teamScore">隊伍分數</h3>
+                        <small data-i18n="autoSaveHint">輸入後即時計算並自動儲存</small>
                     </div>
 
                     <div class="input-grid">
                         <div class="player-input-card self">
                             <div class="player-input-title">
-                                <span class="mini-avatar">你</span>
-                                自己
+                                <span class="mini-avatar" data-i18n="youAvatar">你</span>
+                                <span data-i18n="self">自己</span>
                             </div>
 
                             <div class="player-input-fields">
                                 <div>
-                                    <label for="myScore">目前分數</label>
+                                    <label for="myScore" data-i18n="currentScore">目前分數</label>
                                     <input id="myScore" type="number" min="0" step="1" value="0" inputmode="numeric" />
                                 </div>
 
                                 <div>
-                                    <label for="myCoins">剩餘雪幣</label>
+                                    <label for="myCoins" data-i18n="remainingCoins">剩餘雪幣</label>
                                     <input id="myCoins" type="number" min="0" step="1" value="0" inputmode="numeric" />
                                 </div>
                             </div>
@@ -991,19 +1032,19 @@
 
                         <div class="player-input-card friend">
                             <div class="player-input-title">
-                                <span class="mini-avatar friend">友</span>
-                                隊友
+                                <span class="mini-avatar friend" data-i18n="friendAvatar">友</span>
+                                <span data-i18n="friend">隊友</span>
                             </div>
 
                             <div class="player-input-fields">
                                 <div>
-                                    <label for="teammateScore">目前分數</label>
+                                    <label for="teammateScore" data-i18n="currentScore">目前分數</label>
                                     <input id="teammateScore" type="number" min="0" step="1" value="0"
                                         inputmode="numeric" />
                                 </div>
 
                                 <div>
-                                    <label for="teammateCoins">剩餘雪幣</label>
+                                    <label for="teammateCoins" data-i18n="remainingCoins">剩餘雪幣</label>
                                     <input id="teammateCoins" type="number" min="0" step="1" value="0"
                                         inputmode="numeric" />
                                 </div>
@@ -1012,59 +1053,59 @@
                     </div>
 
                     <div class="clear-row">
-                        <button type="button" onclick="resetAll()">清空全部</button>
+                        <button type="button" onclick="resetAll()" data-i18n="clearAll">清空全部</button>
                     </div>
                 </div>
 
                 <div class="result-area">
                     <div class="block-title">
-                        <h3>計算結果</h3>
-                        <small>固定換算 26 分 / 雪幣</small>
+                        <h3 data-i18n="result">計算結果</h3>
+                        <small data-i18n="fixedRateSmall">固定換算 26 分 / 雪幣</small>
                     </div>
 
                     <div class="metric-grid">
                         <div class="metric good">
-                            <div class="name">目前總分</div>
+                            <div class="name" data-i18n="currentTotalScore">目前總分</div>
                             <div class="value" id="currentTotalScoreText">0</div>
                         </div>
 
                         <div class="metric warn">
-                            <div class="name">距離下一階段</div>
+                            <div class="name" data-i18n="needNextStage">距離下一階段</div>
                             <div class="value" id="needScoreText">4,000</div>
                         </div>
 
                         <div class="metric bad">
-                            <div class="name">距離下一階段需準備雪幣</div>
+                            <div class="name" data-i18n="needCoinsNextStage">距離下一階段需準備雪幣</div>
                             <div class="value" id="actualCoinsText">154</div>
                         </div>
 
                         <div class="metric">
-                            <div class="name">下一階段門檻</div>
+                            <div class="name" data-i18n="nextThreshold">下一階段門檻</div>
                             <div class="value" id="nextThresholdText">4,000</div>
                         </div>
 
                         <div class="metric forecast">
-                            <div class="name">預估可增加分數</div>
+                            <div class="name" data-i18n="forecastAddScore">預估可增加分數</div>
                             <div class="value" id="forecastAddScoreText">0</div>
                         </div>
 
                         <div class="metric forecast">
-                            <div class="name">估計總分</div>
+                            <div class="name" data-i18n="forecastTotalScore">估計總分</div>
                             <div class="value" id="forecastTotalScoreText">0</div>
                         </div>
 
                         <div class="metric warn wide">
-                            <div class="name">預估後距離下一階段</div>
+                            <div class="name" data-i18n="forecastNeedNextStage">預估後距離下一階段</div>
                             <div class="value" id="forecastNeedText">4,000 分 / 154 幣</div>
                         </div>
 
                         <div class="metric forecast">
-                            <div class="name">目前已達階段</div>
+                            <div class="name" data-i18n="currentReachedStage">目前已達階段</div>
                             <div class="value" id="currentLevelText">0 / 15</div>
                         </div>
 
                         <div class="metric forecast">
-                            <div class="name">預估可達階段</div>
+                            <div class="name" data-i18n="forecastReachedStage">預估可達階段</div>
                             <div class="value" id="forecastLevelText">0 / 15</div>
                         </div>
                     </div>
@@ -1072,7 +1113,7 @@
             </div>
         </section>
 
-        <div class="footer">
+        <div class="footer" data-i18n="footer">
             &copy; Coin999 - 長長久久 隊伍
         </div>
     </main>
@@ -1080,27 +1121,86 @@
     <script>
         const POINT_PER_COIN = 26;
         const STORAGE_KEY = "snowAvalancheProgressCalculatorV3";
+        const LANGUAGE_STORAGE_KEY = "snowAvalancheProgressCalculatorLanguage";
+
+        let currentLang = localStorage.getItem(LANGUAGE_STORAGE_KEY) || "zh-Hant";
+        let i18n = {};
 
         const rewards = [
-            { threshold: 4000, reward: "金槌", icon: "🔨" },
-            { threshold: 12000, reward: "400 能量", icon: "🔋" },
-            { threshold: 27000, reward: "300 雪幣", icon: "❄️" },
-            { threshold: 55000, reward: "雷幣 ×1", icon: "⚡" },
-            { threshold: 90000, reward: "2.5K 能量", icon: "🔋" },
-            { threshold: 135000, reward: "雪花球箱", icon: "🎄" },
-            { threshold: 195000, reward: "5K 能量", icon: "🔋" },
-            { threshold: 275000, reward: "銀雷箱", icon: "🎁" },
-            { threshold: 375000, reward: "紅冠寶箱", icon: "👑" },
-            { threshold: 495000, reward: "10K 能量", icon: "🔋" },
-            { threshold: 635000, reward: "雷幣 ×4", icon: "⚡" },
-            { threshold: 825000, reward: "25K 能量", icon: "🔋" },
-            { threshold: 1095000, reward: "35K 能量", icon: "🔋" },
-            { threshold: 1495000, reward: "皇家雷箱", icon: "🏆" },
-            { threshold: 2095000, reward: "80K 能量", icon: "🔋" }
+            { threshold: 4000, rewardKey: "rewardGoldenHammer", icon: "🔨" },
+            { threshold: 12000, rewardKey: "reward400Energy", icon: "🔋" },
+            { threshold: 27000, rewardKey: "reward300SnowCoins", icon: "❄️" },
+            { threshold: 55000, rewardKey: "rewardThunderCoin1", icon: "⚡" },
+            { threshold: 90000, rewardKey: "reward2500Energy", icon: "🔋" },
+            { threshold: 135000, rewardKey: "rewardSnowGlobeBox", icon: "🎄" },
+            { threshold: 195000, rewardKey: "reward5000Energy", icon: "🔋" },
+            { threshold: 275000, rewardKey: "rewardSilverThunderBox", icon: "🎁" },
+            { threshold: 375000, rewardKey: "rewardRedCrownChest", icon: "👑" },
+            { threshold: 495000, rewardKey: "reward10000Energy", icon: "🔋" },
+            { threshold: 635000, rewardKey: "rewardThunderCoin4", icon: "⚡" },
+            { threshold: 825000, rewardKey: "reward25000Energy", icon: "🔋" },
+            { threshold: 1095000, rewardKey: "reward35000Energy", icon: "🔋" },
+            { threshold: 1495000, rewardKey: "rewardRoyalThunderBox", icon: "🏆" },
+            { threshold: 2095000, rewardKey: "reward80000Energy", icon: "🔋" }
         ];
 
         const inputIds = ["myScore", "teammateScore", "myCoins", "teammateCoins"];
         const maxThreshold = rewards[rewards.length - 1].threshold;
+
+        function t(key, params) {
+            const langPack = i18n[currentLang] || i18n["zh-Hant"] || {};
+            let text = langPack[key] || key;
+
+            if (params) {
+                Object.keys(params).forEach(function (name) {
+                    text = text.replaceAll("{" + name + "}", params[name]);
+                });
+            }
+
+            return text;
+        }
+
+        function getLocale() {
+            if (currentLang === "en") return "en-US";
+            if (currentLang === "vi") return "vi-VN";
+            return "zh-Hant-TW";
+        }
+
+        async function loadI18n() {
+            try {
+                const response = await fetch("i18n.json");
+                i18n = await response.json();
+            } catch (error) {
+                console.warn("i18n.json load failed, fallback to built-in Traditional Chinese.", error);
+                i18n = {};
+            }
+
+            const languageSelect = document.getElementById("languageSelect");
+            languageSelect.value = currentLang;
+
+            languageSelect.addEventListener("change", function () {
+                currentLang = languageSelect.value;
+                localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLang);
+                applyI18n();
+                calculate();
+            });
+
+            applyI18n();
+        }
+
+        function applyI18n() {
+            document.documentElement.lang = currentLang;
+            document.title = t("pageTitle");
+
+            document.querySelectorAll("[data-i18n]").forEach(function (element) {
+                const key = element.getAttribute("data-i18n");
+                element.textContent = t(key);
+            });
+        }
+
+        function getRewardName(item) {
+            return t(item.rewardKey);
+        }
 
         function getNumber(id) {
             const value = Number(document.getElementById(id).value);
@@ -1108,15 +1208,15 @@
         }
 
         function formatInt(value) {
-            return Math.ceil(value).toLocaleString("zh-Hant-TW");
+            return Math.ceil(value).toLocaleString(getLocale());
         }
 
         function formatFloor(value) {
-            return Math.floor(value).toLocaleString("zh-Hant-TW");
+            return Math.floor(value).toLocaleString(getLocale());
         }
 
         function formatDecimal(value, digits) {
-            return Number(value).toLocaleString("zh-Hant-TW", {
+            return Number(value).toLocaleString(getLocale(), {
                 minimumFractionDigits: digits,
                 maximumFractionDigits: digits
             });
@@ -1157,12 +1257,6 @@
                 stagePercent = clamp((stageNow / stageTotal) * 100, 0, 100);
             }
 
-            /*
-                重要：
-                因為畫面上的 15 個獎勵圖示是「等距排列」，
-                所以跑條也必須依照「階段位置 + 階段內百分比」計算。
-                例如 110,000 分會落在 90,000 的 2.5K 能量與 135,000 的雪花球箱之間。
-            */
             let railPercent = 100;
 
             if (!completed) {
@@ -1207,7 +1301,7 @@
 
                 div.innerHTML = `
                     <div class="reward-dot">${item.icon}</div>
-                    <div class="reward-name">${item.reward}</div>
+                    <div class="reward-name">${getRewardName(item)}</div>
                     <div class="reward-threshold">${formatFloor(item.threshold)}</div>
                 `;
 
@@ -1262,10 +1356,6 @@
             railFill.style.left = "0%";
             railFill.style.width = currentRailPercent + "%";
 
-            /*
-                預估跑條只畫「目前進度之後，到預估可達位置」的差額區段。
-                這樣藍紫色不會被目前進度條蓋住。
-            */
             railForecastFill.style.left = currentRailPercent + "%";
             railForecastFill.style.width = forecastExtraPercent + "%";
 
@@ -1275,11 +1365,10 @@
                 formatDecimal(current.stagePercent, 1) + "%";
 
             document.getElementById("railStatusText").textContent =
-                "目前 " +
-                formatDecimal(current.railPercent, 1) +
-                "%，預估 " +
-                formatDecimal(forecast.railPercent, 1) +
-                "%";
+                t("railStatus", {
+                    current: formatDecimal(current.railPercent, 1),
+                    forecast: formatDecimal(forecast.railPercent, 1)
+                });
 
             updateCurrentSection(data, current);
             updateForecastSection(data, forecast);
@@ -1295,8 +1384,8 @@
             if (current.completed) {
                 document.getElementById("needScoreText").textContent = "0";
                 document.getElementById("actualCoinsText").textContent = "0";
-                document.getElementById("nextThresholdText").textContent = "已完成";
-                document.getElementById("stageTitle").textContent = "已完成全部階段";
+                document.getElementById("nextThresholdText").textContent = t("completed");
+                document.getElementById("stageTitle").textContent = t("allCompletedStage");
                 return;
             }
 
@@ -1310,7 +1399,9 @@
                 formatFloor(current.nextThreshold);
 
             document.getElementById("stageTitle").textContent =
-                "下一階段：" + current.nextReward.reward;
+                t("nextStage", {
+                    reward: getRewardName(current.nextReward)
+                });
         }
 
         function updateForecastSection(data, forecast) {
@@ -1324,7 +1415,7 @@
                 forecast.currentLevel + " / " + rewards.length;
 
             if (forecast.completed) {
-                document.getElementById("forecastNeedText").textContent = "已完成";
+                document.getElementById("forecastNeedText").textContent = t("completed");
                 return;
             }
 
@@ -1332,9 +1423,12 @@
 
             document.getElementById("forecastNeedText").textContent =
                 formatInt(forecast.needScore) +
-                " 分 / " +
+                " " +
+                t("scoreUnit") +
+                " / " +
                 formatInt(forecastNeedCoins) +
-                " 幣";
+                " " +
+                t("coinUnit");
         }
 
         function resetAll() {
@@ -1371,7 +1465,7 @@
                     }
                 });
             } catch (error) {
-                console.warn("讀取儲存資料失敗", error);
+                console.warn(t("loadStorageFailed"), error);
             }
         }
 
@@ -1381,7 +1475,10 @@
         });
 
         loadState();
-        calculate();
+
+        loadI18n().then(function () {
+            calculate();
+        });
     </script>
 </body>
 
