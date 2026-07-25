@@ -1,18 +1,25 @@
 :root {
     --sky-1: #42c8ff;
     --sky-2: #dff8ff;
-    --deep-blue: #174a9c;
-    --gold: #ffd45a;
-    --orange: #ff9f38;
-    --green: #35c977;
-    --red: #ff5b5b;
-    --purple: #775cff;
-    --cyan: #37c8ff;
+    --blue: #174a9c;
     --text: #24425c;
     --muted: #6c8197;
+
+    --white-90: rgba(255, 255, 255, 0.9);
+    --white-86: rgba(255, 255, 255, 0.86);
+    --white-80: rgba(255, 255, 255, 0.8);
+    --white-70: rgba(255, 255, 255, 0.7);
+
+    --green: #35c977;
+    --gold: #ffd45a;
+    --orange: #ff9f38;
+    --cyan: #37c8ff;
+    --purple: #775cff;
+
     --card: rgba(255, 255, 255, 0.9);
     --border: rgba(255, 255, 255, 0.8);
     --shadow: 0 18px 45px rgba(39, 92, 145, 0.22);
+    --inner-blue-shadow: inset 0 -12px 24px rgba(63, 181, 255, 0.07);
 }
 
 * {
@@ -59,6 +66,7 @@ body::after {
 body::before {
     bottom: 255px;
     height: 270px;
+    opacity: 0.9;
     background:
         linear-gradient(135deg, transparent 0 8%, rgba(255, 255, 255, 0.88) 8% 18%, transparent 18%),
         linear-gradient(225deg, transparent 0 12%, rgba(234, 249, 255, 0.95) 12% 26%, transparent 26%),
@@ -73,7 +81,6 @@ body::before {
             82% 30%,
             100% 72%,
             100% 100%);
-    opacity: 0.9;
 }
 
 body::after {
@@ -90,8 +97,8 @@ body::after {
 .snow-layer {
     position: fixed;
     inset: 0;
-    pointer-events: none;
     z-index: 2;
+    pointer-events: none;
     opacity: 0.55;
     background-image:
         radial-gradient(circle, rgba(255, 255, 255, 0.95) 1px, transparent 1.5px),
@@ -113,12 +120,14 @@ body::after {
 }
 
 .app {
+    position: relative;
+    z-index: 3;
     width: min(1180px, calc(100% - 28px));
     margin: 0 auto;
     padding: 28px 0 60px;
-    position: relative;
-    z-index: 3;
 }
+
+/* Card Shell */
 
 .hero,
 .panel {
@@ -131,22 +140,24 @@ body::after {
 }
 
 .hero {
-    padding: 28px;
     position: relative;
     overflow: hidden;
+    padding: 28px;
     margin-bottom: 20px;
 }
 
 .hero::before {
     content: "";
     position: absolute;
+    top: -130px;
+    right: -105px;
     width: 330px;
     height: 330px;
-    right: -105px;
-    top: -130px;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255, 212, 90, 0.62), transparent 65%);
 }
+
+/* Header */
 
 .top-actions {
     position: relative;
@@ -163,66 +174,68 @@ body::after {
     border-radius: 999px;
     border: 1px solid rgba(39, 110, 233, 0.18);
     background: rgba(255, 255, 255, 0.78);
-    color: var(--deep-blue);
+    color: var(--blue);
     font-weight: 950;
     outline: none;
 }
 
 .badge {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 8px 14px;
-    background: linear-gradient(135deg, #fff7ca, #ffe17d);
-    border: 2px solid rgba(255, 255, 255, 0.9);
-    color: #8b5a00;
     border-radius: 999px;
-    font-weight: 950;
-    font-size: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    background: linear-gradient(135deg, #fff7ca, #ffe17d);
     box-shadow: 0 8px 18px rgba(255, 179, 48, 0.22);
-    position: relative;
-    z-index: 1;
+    color: #8b5a00;
+    font-size: 14px;
+    font-weight: 950;
     white-space: nowrap;
 }
 
 h1 {
+    position: relative;
+    z-index: 1;
     margin: 16px 0 10px;
+    color: #ffffff;
     font-size: clamp(34px, 6vw, 62px);
     line-height: 1.04;
     letter-spacing: 1px;
-    color: #ffffff;
     text-shadow:
         0 3px 0 #1763b2,
         0 6px 18px rgba(15, 74, 144, 0.4);
-    position: relative;
-    z-index: 1;
 }
 
 .subtitle {
-    margin: 0;
-    max-width: 820px;
-    font-size: 17px;
-    line-height: 1.75;
-    color: #31566f;
-    font-weight: 750;
     position: relative;
     z-index: 1;
+    max-width: 820px;
+    margin: 0;
+    color: #31566f;
+    font-size: 17px;
+    font-weight: 750;
+    line-height: 1.75;
 }
 
 .fixed-rate {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     gap: 9px;
     margin-top: 18px;
     padding: 10px 14px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.68);
     border: 1px solid rgba(255, 255, 255, 0.85);
-    color: var(--deep-blue);
+    background: rgba(255, 255, 255, 0.68);
+    color: var(--blue);
     font-weight: 950;
-    position: relative;
-    z-index: 1;
 }
+
+/* Section */
 
 .reward-panel,
 .dashboard-panel {
@@ -230,25 +243,46 @@ h1 {
     margin-bottom: 20px;
 }
 
-.section-title {
+.section-title,
+.block-title,
+.stage-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
+}
+
+.section-title {
     margin-bottom: 18px;
 }
 
-.section-title h2 {
+.section-title h2,
+.block-title h3 {
     margin: 0;
-    color: var(--deep-blue);
+    color: var(--blue);
+    font-weight: 950;
+}
+
+.section-title h2 {
     font-size: 24px;
     letter-spacing: 0.5px;
 }
 
-.section-title small {
+.block-title {
+    margin-bottom: 12px;
+}
+
+.block-title h3 {
+    font-size: 19px;
+}
+
+.section-title small,
+.block-title small {
     color: var(--muted);
     font-weight: 850;
 }
+
+/* Legend */
 
 .legend-row {
     display: flex;
@@ -263,38 +297,43 @@ h1 {
     gap: 7px;
     padding: 7px 10px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.66);
     border: 1px solid rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.66);
     color: #31566f;
     font-size: 13px;
     font-weight: 850;
 }
 
 .legend-dot {
+    display: inline-block;
     width: 13px;
     height: 13px;
     border-radius: 999px;
-    display: inline-block;
 }
 
-.legend-dot.current {
-    background: linear-gradient(90deg, #35c977, #ffe45c, #ff9f38);
+.legend-dot.current,
+.rail-fill,
+.stage-fill {
+    background: linear-gradient(90deg, var(--green), #ffe45c, var(--orange));
 }
 
-.legend-dot.forecast {
-    background: linear-gradient(90deg, #37c8ff, #775cff);
+.legend-dot.forecast,
+.rail-forecast-fill {
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
 }
 
 .legend-dot.next {
-    background: #ffd45a;
+    background: var(--gold);
 }
+
+/* Reward Rail */
 
 .reward-rail-wrap {
     position: relative;
+    max-width: 100%;
     padding: 16px 0 4px;
     overflow-x: auto;
     overflow-y: hidden;
-    max-width: 100%;
 }
 
 .reward-rail {
@@ -305,38 +344,36 @@ h1 {
 
 .rail-line {
     position: absolute;
+    top: 67px;
     left: 42px;
     right: 42px;
-    top: 67px;
+    z-index: 0;
     height: 14px;
+    overflow: hidden;
     border-radius: 999px;
     background: rgba(39, 110, 233, 0.16);
     box-shadow: inset 0 2px 8px rgba(32, 81, 140, 0.13);
-    overflow: hidden;
-    z-index: 0;
 }
 
-.rail-forecast-fill,
-.rail-fill {
+.rail-fill,
+.rail-forecast-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
     width: 0%;
     height: 100%;
     border-radius: inherit;
     transition:
         width 0.35s ease,
         left 0.35s ease;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
 }
 
 .rail-fill {
-    background: linear-gradient(90deg, #35c977, #ffe45c, #ff9f38);
     z-index: 2;
 }
 
 .rail-forecast-fill {
-    background: linear-gradient(90deg, #37c8ff, #775cff);
     z-index: 3;
     box-shadow:
         0 0 10px rgba(55, 200, 255, 0.55),
@@ -373,22 +410,25 @@ h1 {
 }
 
 .reward-step {
-    text-align: center;
     min-width: 62px;
+    text-align: center;
 }
 
 .reward-dot {
+    display: grid;
+    place-items: center;
     width: 56px;
     height: 56px;
     margin: 0 auto 8px;
-    display: grid;
-    place-items: center;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.88);
     border: 2px solid rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.88);
     box-shadow: 0 8px 18px rgba(50, 100, 150, 0.14);
     font-size: 26px;
-    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .reward-step.done .reward-dot {
@@ -404,10 +444,10 @@ h1 {
 }
 
 .reward-step.next .reward-dot {
-    background: linear-gradient(135deg, #fff7ca, #ffd45a);
+    background: linear-gradient(135deg, #fff7ca, var(--gold));
     border-color: rgba(255, 159, 56, 0.55);
-    transform: translateY(-6px) scale(1.06);
     box-shadow: 0 14px 26px rgba(255, 179, 48, 0.28);
+    transform: translateY(-6px) scale(1.06);
 }
 
 .reward-step.forecast-target .reward-dot {
@@ -417,80 +457,58 @@ h1 {
 }
 
 .reward-name {
+    min-height: 32px;
+    color: var(--blue);
     font-size: 12px;
     font-weight: 950;
-    color: var(--deep-blue);
     line-height: 1.25;
-    min-height: 32px;
 }
 
 .reward-threshold {
     margin-top: 3px;
-    font-size: 11px;
     color: var(--muted);
+    font-size: 11px;
     font-weight: 850;
 }
+
+/* Stage Progress */
 
 .stage-progress {
     margin-top: 18px;
     padding: 18px;
     border-radius: 24px;
+    border: 1px solid var(--white-80);
     background: rgba(255, 255, 255, 0.64);
-    border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .stage-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 14px;
-    align-items: center;
     margin-bottom: 12px;
-    color: var(--deep-blue);
+    color: var(--blue);
     font-weight: 950;
 }
 
 .stage-bar {
     height: 22px;
-    background: rgba(39, 110, 233, 0.13);
-    border-radius: 999px;
     overflow: hidden;
+    border-radius: 999px;
+    background: rgba(39, 110, 233, 0.13);
     box-shadow: inset 0 2px 8px rgba(32, 81, 140, 0.13);
 }
 
 .stage-fill {
+    position: relative;
     width: 0%;
     height: 100%;
     border-radius: inherit;
-    background: linear-gradient(90deg, #35c977, #ffe45c, #ff9f38);
     transition: width 0.35s ease;
-    position: relative;
 }
+
+/* Dashboard */
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr;
     gap: 22px;
     align-items: start;
-}
-
-.block-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.block-title h3 {
-    margin: 0;
-    color: var(--deep-blue);
-    font-size: 19px;
-    font-weight: 950;
-}
-
-.block-title small {
-    color: var(--muted);
-    font-weight: 850;
 }
 
 .input-grid {
@@ -499,13 +517,17 @@ h1 {
     gap: 14px;
 }
 
+.player-input-card,
+.metric,
+.strategy-card {
+    border: 1px solid var(--white-86);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(233, 249, 255, 0.8));
+    box-shadow: var(--inner-blue-shadow);
+}
+
 .player-input-card {
     padding: 16px;
     border-radius: 22px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(233, 249, 255, 0.8));
-    border: 1px solid rgba(255, 255, 255, 0.86);
-    box-shadow: inset 0 -12px 24px rgba(63, 181, 255, 0.07);
-    min-width: 0;
 }
 
 .player-input-card.self {
@@ -520,10 +542,10 @@ h1 {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--deep-blue);
+    margin-bottom: 12px;
+    color: var(--blue);
     font-size: 15px;
     font-weight: 950;
-    margin-bottom: 12px;
 }
 
 .player-input-fields {
@@ -533,45 +555,46 @@ h1 {
 }
 
 .mini-avatar {
-    width: 28px;
-    height: 28px;
     display: inline-grid;
     place-items: center;
+    width: 28px;
+    height: 28px;
     border-radius: 10px;
-    color: white;
-    font-weight: 950;
-    background: linear-gradient(135deg, #59c5ff, #775cff);
+    background: linear-gradient(135deg, #59c5ff, var(--purple));
     box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45);
+    color: #ffffff;
     font-size: 12px;
+    font-weight: 950;
 }
 
 .mini-avatar.friend {
-    background: linear-gradient(135deg, #35c977, #59c5ff);
+    background: linear-gradient(135deg, var(--green), #59c5ff);
 }
 
 label {
     display: block;
-    font-size: 13px;
-    color: #4d6d87;
-    font-weight: 900;
     margin-bottom: 7px;
+    color: #4d6d87;
+    font-size: 13px;
+    font-weight: 900;
     text-align: left;
 }
 
 input {
     width: 100%;
     min-height: 48px;
+    padding: 9px 12px;
     border: 1px solid rgba(37, 101, 166, 0.16);
     border-radius: 15px;
-    padding: 9px 12px;
+    outline: none;
     background: rgba(255, 255, 255, 0.92);
     color: var(--text);
     font-size: 20px;
     font-weight: 950;
-    outline: none;
     text-align: center;
-    transition: box-shadow 0.15s ease, border-color 0.15s ease;
-    min-width: 0;
+    transition:
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
 }
 
 input:focus {
@@ -580,28 +603,31 @@ input:focus {
 }
 
 .clear-row {
-    margin-top: 12px;
     display: flex;
     justify-content: flex-end;
+    margin-top: 12px;
 }
 
 button {
-    border: 0;
     cursor: pointer;
     padding: 11px 16px;
-    border-radius: 15px;
-    font-weight: 950;
-    color: var(--deep-blue);
-    background: rgba(255, 255, 255, 0.78);
     border: 1px solid rgba(39, 110, 233, 0.16);
-    transition: transform 0.16s ease, filter 0.16s ease;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.78);
+    color: var(--blue);
     font-size: 14px;
+    font-weight: 950;
+    transition:
+        transform 0.16s ease,
+        filter 0.16s ease;
 }
 
 button:hover {
-    transform: translateY(-2px);
     filter: brightness(1.03);
+    transform: translateY(-2px);
 }
+
+/* Metrics */
 
 .metric-grid {
     display: grid;
@@ -613,24 +639,20 @@ button:hover {
     min-height: 96px;
     padding: 14px;
     border-radius: 20px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(233, 249, 255, 0.78));
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    box-shadow: inset 0 -12px 24px rgba(63, 181, 255, 0.07);
-    min-width: 0;
 }
 
 .metric .name {
-    font-size: 13px;
-    color: var(--muted);
-    font-weight: 900;
     margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 900;
     line-height: 1.2;
 }
 
 .metric .value {
+    color: var(--blue);
     font-size: clamp(21px, 3vw, 29px);
     font-weight: 950;
-    color: var(--deep-blue);
     line-height: 1.12;
     word-break: break-word;
 }
@@ -655,30 +677,24 @@ button:hover {
     grid-column: span 2;
 }
 
-/* 建議轉法 */
+/* Strategy */
+
 .strategy-panel {
     margin-top: 18px;
-}
-
-.strategy-title {
-    margin-top: 4px;
 }
 
 .strategy-card {
     padding: 16px;
     border-radius: 22px;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(236, 248, 255, 0.82));
-    border: 1px solid rgba(255, 255, 255, 0.86);
-    box-shadow: inset 0 -12px 24px rgba(63, 181, 255, 0.07);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(236, 248, 255, 0.82));
 }
 
 .strategy-status {
-    color: var(--deep-blue);
+    margin-bottom: 10px;
+    color: var(--blue);
     font-size: 15px;
     font-weight: 950;
     line-height: 1.5;
-    margin-bottom: 10px;
 }
 
 .strategy-list {
@@ -698,21 +714,25 @@ button:hover {
     margin-top: 12px;
     padding: 10px 12px;
     border-radius: 16px;
-    background: rgba(255, 247, 202, 0.76);
     border: 1px solid rgba(255, 212, 90, 0.56);
+    background: rgba(255, 247, 202, 0.76);
     color: #8b5a00;
     font-size: 13px;
     font-weight: 950;
     line-height: 1.45;
 }
 
+/* Footer */
+
 .footer {
     margin-top: 22px;
-    text-align: center;
     color: rgba(36, 66, 92, 0.72);
-    font-weight: 850;
     font-size: 13px;
+    font-weight: 850;
+    text-align: center;
 }
+
+/* RWD */
 
 @media (max-width: 980px) {
     .metric-grid {
@@ -756,10 +776,10 @@ button:hover {
     }
 
     .hero::before {
+        top: -80px;
+        right: -70px;
         width: 180px;
         height: 180px;
-        right: -70px;
-        top: -80px;
     }
 
     .top-actions {
@@ -799,17 +819,18 @@ button:hover {
     }
 
     .section-title {
-        margin-bottom: 10px;
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
         gap: 4px;
+        margin-bottom: 10px;
     }
 
     .section-title h2 {
         font-size: 20px;
     }
 
-    .section-title small {
+    .section-title small,
+    .block-title small {
         font-size: 12px;
     }
 
@@ -834,9 +855,9 @@ button:hover {
     }
 
     .rail-line {
+        top: 45px;
         left: 30px;
         right: 30px;
-        top: 45px;
         height: 10px;
     }
 
@@ -851,14 +872,14 @@ button:hover {
     .reward-dot {
         width: 38px;
         height: 38px;
+        margin-bottom: 5px;
         border-radius: 13px;
         font-size: 19px;
-        margin-bottom: 5px;
     }
 
     .reward-name {
-        font-size: 9px;
         min-height: 22px;
+        font-size: 9px;
     }
 
     .reward-threshold {
@@ -892,12 +913,12 @@ button:hover {
         font-size: 17px;
     }
 
-    .block-title small {
-        font-size: 12px;
+    .input-grid,
+    .player-input-fields {
+        grid-template-columns: 1fr;
     }
 
     .input-grid {
-        grid-template-columns: 1fr;
         gap: 10px;
     }
 
@@ -907,12 +928,11 @@ button:hover {
     }
 
     .player-input-title {
-        font-size: 14px;
         margin-bottom: 10px;
+        font-size: 14px;
     }
 
     .player-input-fields {
-        grid-template-columns: 1fr;
         gap: 10px;
     }
 
@@ -924,8 +944,8 @@ button:hover {
     }
 
     label {
-        font-size: 12px;
         margin-bottom: 6px;
+        font-size: 12px;
     }
 
     input {
@@ -935,8 +955,8 @@ button:hover {
     }
 
     .clear-row {
-        margin-top: 10px;
         justify-content: stretch;
+        margin-top: 10px;
     }
 
     button {
@@ -958,8 +978,8 @@ button:hover {
     }
 
     .metric .name {
-        font-size: 12px;
         margin-bottom: 6px;
+        font-size: 12px;
     }
 
     .metric .value {
@@ -970,7 +990,6 @@ button:hover {
         grid-column: auto;
     }
 
-    /* 手機版建議轉法 */
     .strategy-panel {
         margin-top: 14px;
     }
@@ -990,8 +1009,8 @@ button:hover {
     }
 
     .strategy-note {
-        font-size: 12px;
         border-radius: 14px;
+        font-size: 12px;
     }
 
     .footer {
