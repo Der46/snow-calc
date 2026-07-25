@@ -54,88 +54,13 @@ const loadI18nJson = async () => {
     } catch (error) {
         console.error("i18n.json load failed:", error);
 
-        languageMeta = {
-            "zh-Hant": {
-                label: "繁體中文",
-                locale: "zh-Hant-TW",
-                timeZone: "Asia/Taipei",
-                utc: "UTC+08:00"
-            }
-        };
-
-        i18n = {
-            "zh-Hant": {
-                pageTitle: "雪崩派對進度計算機",
-                badge: "❄️ 雪崩派對",
-                heroTitle: "進度與雪幣期望計算機",
-                subtitle: "輸入自己與隊友目前的分數，以及雙方剩餘雪幣，系統會自動加總隊伍分數，判斷下一階段獎勵，並預估把剩餘雪幣跑完後可以到達的估計總分。",
-                fixedRate: "❄️ 固定換算：1 雪幣 ≈ 26 分",
-                rewardProgress: "獎勵進度",
-                railStatus: "目前 {current}%，預估 {forecast}%",
-                legendCurrent: "目前已跑進度",
-                legendForecast: "剩餘雪幣預估可達",
-                legendNext: "目前下一階段",
-                nextStage: "下一階段：{reward}",
-                allCompletedStage: "已完成全部階段",
-                teamScoreAndResult: "隊伍分數與計算結果",
-                teamScore: "隊伍分數",
-                autoSaveHint: "輸入後即時計算並自動儲存",
-                self: "自己",
-                friend: "隊友",
-                youAvatar: "你",
-                friendAvatar: "友",
-                currentScore: "目前分數",
-                remainingCoins: "剩餘雪幣",
-                clearAll: "清空全部",
-                result: "計算結果",
-                fixedRateSmall: "固定換算 26 分 / 雪幣",
-                currentTotalScore: "目前總分",
-                needNextStage: "距離下一階段",
-                needCoinsNextStage: "距離下一階段需準備雪幣",
-                nextThreshold: "下一階段門檻",
-                forecastAddScore: "預估可增加分數",
-                forecastTotalScore: "估計總分",
-                forecastNeedNextStage: "預估後距離下一階段",
-                currentReachedStage: "目前已達階段",
-                forecastReachedStage: "預估可達階段",
-                completed: "已完成",
-                scoreUnit: "分",
-                coinUnit: "幣",
-                rewardGoldenHammer: "金槌",
-                reward400Energy: "400 能量",
-                reward300SnowCoins: "300 雪幣",
-                rewardThunderCoin1: "雷幣 ×1",
-                reward2500Energy: "2.5K 能量",
-                rewardSnowGlobeBox: "雪花球箱",
-                reward5000Energy: "5K 能量",
-                rewardSilverThunderBox: "銀雷箱",
-                rewardRedCrownChest: "紅冠寶箱",
-                reward10000Energy: "10K 能量",
-                rewardThunderCoin4: "雷幣 ×4",
-                reward25000Energy: "25K 能量",
-                reward35000Energy: "35K 能量",
-                rewardRoyalThunderBox: "皇家雷箱",
-                reward80000Energy: "80K 能量",
-                strategyTitle: "建議轉法",
-                strategyHint: "依剩餘雪幣自動建議",
-                strategyStatusHigh: "剩餘雪幣超過 5,000，建議使用高代幣倍率策略。",
-                strategyStatusMedium: "剩餘雪幣超過 2,000，建議使用中代幣倍率策略。",
-                strategyStatusLow: "目前剩餘雪幣不足 2,000，暫不建議使用倍率策略。",
-                strategyStep1xTimes: "1 倍率 × {times} 次",
-                strategyStep3xTimes: "3 倍率 × {times} 次",
-                strategyStep10xTimes: "10 倍率 × {times} 次",
-                strategyStep30xTimes: "30 倍率 × {times} 次",
-                strategyStep50xUntil: "50 倍率直到中最高分數",
-                strategyStep10xUntil: "10 倍率直到中最高分數",
-                strategyResetNote: "※ 以上方法若提前中最高分數，請重新計數。",
-                footer: "© {year} 資料提供 CM大佬群 隊伍｜網頁製作 Coin999-長長久久 隊伍",
-                loadStorageFailed: "讀取儲存資料失敗"
-            }
-        };
+        languageMeta = {};
+        i18n = {};
 
         currentLang = "zh-Hant";
     }
 };
+
 
 const t = (key, params = {}) => {
     const langPack = i18n[currentLang] ?? i18n["zh-Hant"] ?? {};
