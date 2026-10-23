@@ -1,0 +1,16 @@
+{
+    "name": "雪崩派對進度計算機",
+    "short_name": "雪崩計算機",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#dff8ff",
+    "theme_color": "#42c8ff",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }
+    ]
+}

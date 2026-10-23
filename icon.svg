@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="雪崩派對進度計算機">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#42c8ff"/>
+      <stop offset="0.6" stop-color="#9ee9ff"/>
+      <stop offset="1" stop-color="#dff8ff"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd45a"/>
+      <stop offset="1" stop-color="#ff9f38"/>
+    </linearGradient>
+    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e6f6ff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#sky)"/>
+  <circle cx="110" cy="96" r="46" fill="#ffffff" opacity="0.55"/>
+  <circle cx="420" cy="120" r="30" fill="#ffffff" opacity="0.4"/>
+
+  <!-- Snow hills -->
+  <path d="M0 400 C90 340 170 360 250 392 C330 424 420 360 512 380 V400 C512 462 462 512 400 512 H112 C50 512 0 462 0 400 Z" fill="url(#snow)"/>
+
+  <!-- Progress ring -->
+  <circle cx="256" cy="230" r="150" fill="#ffffff" opacity="0.92"/>
+  <circle cx="256" cy="230" r="128" fill="none" stroke="#d6eefc" stroke-width="26"/>
+  <circle cx="256" cy="230" r="128" fill="none" stroke="url(#ring)" stroke-width="26"
+          stroke-linecap="round" stroke-dasharray="563 805" transform="rotate(-90 256 230)"/>
+
+  <!-- Snowflake -->
+  <g stroke="#174a9c" stroke-width="16" stroke-linecap="round" fill="none" transform="translate(256 230)">
+    <g id="arm">
+      <line x1="0" y1="0" x2="0" y2="-80"/>
+      <polyline points="-22,-62 0,-42 22,-62"/>
+    </g>
+    <use href="#arm" transform="rotate(60)"/>
+    <use href="#arm" transform="rotate(120)"/>
+    <use href="#arm" transform="rotate(180)"/>
+    <use href="#arm" transform="rotate(240)"/>
+    <use href="#arm" transform="rotate(300)"/>
+  </g>
+  <circle cx="256" cy="230" r="14" fill="#37c8ff"/>
+</svg>
