@@ -1,13 +1,18 @@
-const POINT_PER_COIN = 26;
-const STORAGE_KEY = "snowAvalancheProgressCalculatorV3";
 const LANGUAGE_STORAGE_KEY = "snowAvalancheProgressCalculatorLanguage";
+const MODE_STORAGE_KEY = "eventCalculatorMode";
+const SPEED_ROUND_STORAGE_KEY = "speedStarsCalculatorRound";
 const I18N_JSON_PATH = "i18n.json";
 
 let languageMeta = {};
 let i18n = {};
+let modeI18n = {};
 let currentLang = localStorage.getItem(LANGUAGE_STORAGE_KEY) || "zh-Hant";
 
-const rewards = [
+const spins = (n) => ({ rewardKey: "rewardSpinsN", params: { n } });
+const speedies = (n) => ({ rewardKey: "rewardSpeediesN", params: { n } });
+const thunder = (n) => ({ rewardKey: "rewardThunderCoinN", params: { n } });
+
+const avalancheRewards = [
     { threshold: 4000, rewardKey: "rewardGoldenHammer", icon: "🔨" },
     { threshold: 12000, rewardKey: "reward400Energy", icon: "🔋" },
     { threshold: 27000, rewardKey: "reward300SnowCoins", icon: "❄️" },
@@ -25,18 +30,78 @@ const rewards = [
     { threshold: 2095000, rewardKey: "reward80000Energy", icon: "🔋" }
 ];
 
-const inputIds = ["myScore", "teammateScore", "myCoins", "teammateCoins"];
-const maxThreshold = rewards.at(-1).threshold;
+const speedRewards = {
+    1: [
+        { threshold: 1800, rewardKey: "rewardSeasonalBigGoldenChest", icon: "🧰" },
+        { threshold: 6000, ...spins(200), icon: "🔋" },
+        { threshold: 14000, ...thunder(1), icon: "⚡" },
+        { threshold: 60000, ...speedies(300), icon: "🏁" },
+        { threshold: 80000, rewardKey: "rewardPumpkinHalloweenChest", icon: "🎃" },
+        { threshold: 115000, rewardKey: "rewardMysteryChest2", icon: "❓" },
+        { threshold: 160000, ...spins(2500), icon: "🔋" },
+        { threshold: 230000, rewardKey: "rewardCrazyHalloweenChest", icon: "😈" },
+        { threshold: 400000, ...spins(5000), icon: "🔋" },
+        { threshold: 600000, ...spins(20000), icon: "🔋" }
+    ],
+    2: [
+        { threshold: 10000, rewardKey: "rewardSmallHalloweenChest", icon: "🎃" },
+        { threshold: 30000, ...speedies(100), icon: "🏁" },
+        { threshold: 60000, ...thunder(1), icon: "⚡" },
+        { threshold: 120000, rewardKey: "rewardSmallHalloweenChest", icon: "🎃" },
+        { threshold: 190000, ...spins(1500), icon: "🔋" },
+        { threshold: 300000, ...spins(2000), icon: "🔋" },
+        { threshold: 450000, rewardKey: "rewardBlueChest", icon: "🧊" },
+        { threshold: 650000, ...spins(3500), icon: "🔋" },
+        { threshold: 1000000, rewardKey: "rewardHalloweenChest", icon: "🎃" },
+        { threshold: 1300000, ...spins(10000), icon: "🔋" },
+        { threshold: 1700000, ...thunder(4), icon: "🏆" }
+    ],
+    3: [
+        { threshold: 10000, rewardKey: "rewardPinataGuitar", icon: "🎸" },
+        { threshold: 30000, ...speedies(150), icon: "🏁" },
+        { threshold: 60000, ...thunder(1), icon: "⚡" },
+        { threshold: 120000, ...spins(500), icon: "🔋" },
+        { threshold: 190000, rewardKey: "rewardPinata", icon: "🪅" },
+        { threshold: 300000, rewardKey: "rewardFlameChest", icon: "🔥" },
+        { threshold: 450000, ...spins(3000), icon: "🔋" },
+        { threshold: 650000, rewardKey: "rewardSpinsChest", icon: "🧰" },
+        { threshold: 1000000, ...spins(7000), icon: "🔋" },
+        { threshold: 1300000, rewardKey: "rewardRedCrownChest", icon: "👑" },
+        { threshold: 1700000, rewardKey: "rewardMediumThunderBox", icon: "🏆" }
+    ]
+};
 
-const $ = (selector) => document.querySelector(selector);
+const MODES = {
+    avalanche: {
+        pointPerCoin: 26,
+        themeColor: "#3aa8ef",
+        rounds: { 1: avalancheRewards },
+        storageKey: () => "snowAvalancheProgressCalculatorV3"
+    },
+    speed: {
+        pointPerCoin: 26,
+        themeColor: "#ffc21a",
+        rounds: speedRewards,
+        storageKey: (round) => `speedStarsCalculatorV1:r${round}`
+    }
+};
+
+let currentMode = MODES[localStorage.getItem(MODE_STORAGE_KEY)] ? localStorage.getItem(MODE_STORAGE_KEY) : "avalanche";
+let currentRound = Number(localStorage.getItem(SPEED_ROUND_STORAGE_KEY)) || 1;
+
+const inputIds = ["myScore", "teammateScore", "myCoins", "teammateCoins"];
+
 const $$ = (selector) => document.querySelectorAll(selector);
 const byId = (id) => document.getElementById(id);
 
+const getModeConfig = () => MODES[currentMode];
+const getRound = () => (currentMode === "speed" ? currentRound : 1);
+const getRewards = () => getModeConfig().rounds[getRound()];
+const getPointPerCoin = () => getModeConfig().pointPerCoin;
+
 const loadI18nJson = async () => {
     try {
-        const response = await fetch(I18N_JSON_PATH, {
-            cache: "no-store"
-        });
+        const response = await fetch(I18N_JSON_PATH, { cache: "no-store" });
 
         if (!response.ok) {
             throw new Error(`Failed to load ${I18N_JSON_PATH}: ${response.status}`);
@@ -46,77 +111,65 @@ const loadI18nJson = async () => {
 
         languageMeta = data.languageMeta ?? {};
         i18n = data.i18n ?? {};
-
-        if (!i18n[currentLang]) {
-            currentLang = "zh-Hant";
-            localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLang);
-        }
+        modeI18n = data.modeI18n ?? {};
     } catch (error) {
         console.error("i18n.json load failed:", error);
-
         languageMeta = {};
         i18n = {};
-
-        currentLang = "zh-Hant";
+        modeI18n = {};
     }
-};
 
-
-const t = (key, params = {}) => {
-    const langPack = i18n[currentLang] ?? i18n["zh-Hant"] ?? {};
-    const fallbackPack = i18n["zh-Hant"] ?? {};
-    let text = langPack[key] ?? fallbackPack[key] ?? key;
-
-    const mergedParams = {
-        year: new Date().getFullYear(),
-        ...params
-    };
-
-    Object.entries(mergedParams).forEach(([name, value]) => {
-        text = text.replaceAll(`{${name}}`, String(value));
-    });
-
-    return text;
+    if (!i18n[currentLang]) {
+        currentLang = "zh-Hant";
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLang);
+    }
 };
 
 const getLocale = () => languageMeta[currentLang]?.locale ?? "zh-Hant-TW";
 
-const getTimeZone = () => languageMeta[currentLang]?.timeZone ?? "Asia/Taipei";
+const t = (key, params = {}) => {
+    const modePacks = modeI18n[currentMode] ?? {};
+    let text =
+        modePacks[currentLang]?.[key] ??
+        i18n[currentLang]?.[key] ??
+        modePacks["zh-Hant"]?.[key] ??
+        i18n["zh-Hant"]?.[key] ??
+        key;
+
+    const mergedParams = {
+        year: new Date().getFullYear(),
+        rate: getPointPerCoin(),
+        ...params
+    };
+
+    Object.entries(mergedParams).forEach(([name, value]) => {
+        const shown = typeof value === "number" && name !== "year"
+            ? value.toLocaleString(getLocale())
+            : String(value);
+        text = text.replaceAll(`{${name}}`, shown);
+    });
+
+    return text;
+};
 
 const applyI18n = () => {
     document.documentElement.lang = currentLang;
     document.title = t("pageTitle");
 
     $$("[data-i18n]").forEach((element) => {
-        const key = element.dataset.i18n;
-        element.textContent = t(key);
+        element.textContent = t(element.dataset.i18n);
+    });
+
+    $$("[data-i18n-label]").forEach((element) => {
+        element.setAttribute("aria-label", t(element.dataset.i18nLabel));
+    });
+
+    $$("[data-round]").forEach((button) => {
+        button.textContent = t("roundTab", { n: Number(button.dataset.round) });
     });
 };
 
-const initLanguage = () => {
-    if (!i18n[currentLang]) {
-        currentLang = "zh-Hant";
-        localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLang);
-    }
-
-    const languageSelect = byId("languageSelect");
-
-    if (!languageSelect) return;
-
-    languageSelect.value = currentLang;
-
-    languageSelect.addEventListener("change", () => {
-        currentLang = languageSelect.value;
-        localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLang);
-
-        applyI18n();
-        calculate();
-    });
-
-    applyI18n();
-};
-
-const getRewardName = (item) => t(item.rewardKey);
+const getRewardName = (item) => t(item.rewardKey, item.params);
 
 const getNumber = (id) => {
     const value = Number(byId(id)?.value ?? 0);
@@ -135,6 +188,8 @@ const formatDecimal = (value, digits) => Number(value).toLocaleString(getLocale(
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 const getProgressData = (score) => {
+    const rewards = getRewards();
+    const pointPerCoin = getPointPerCoin();
     let currentLevel = 0;
     let nextReward = null;
 
@@ -149,7 +204,7 @@ const getProgressData = (score) => {
 
     const completed = nextReward === null;
     const previousThreshold = currentLevel > 0 ? rewards[currentLevel - 1].threshold : 0;
-    const nextThreshold = completed ? maxThreshold : nextReward.threshold;
+    const nextThreshold = completed ? rewards.at(-1).threshold : nextReward.threshold;
 
     let needScore = 0;
     let actualCoins = 0;
@@ -157,7 +212,7 @@ const getProgressData = (score) => {
 
     if (!completed) {
         needScore = Math.max(0, nextThreshold - score);
-        actualCoins = Math.ceil(needScore / POINT_PER_COIN);
+        actualCoins = Math.ceil(needScore / pointPerCoin);
 
         const stageTotal = nextThreshold - previousThreshold;
         const stageNow = score - previousThreshold;
@@ -187,6 +242,8 @@ const renderRewardRail = (currentScore, forecastScore, currentNextReward, foreca
     const rewardList = byId("rewardList");
     if (!rewardList) return;
 
+    const rewards = getRewards();
+    rewardList.closest(".reward-rail")?.style.setProperty("--steps", rewards.length);
     rewardList.innerHTML = "";
 
     const fragment = document.createDocumentFragment();
@@ -206,7 +263,7 @@ const renderRewardRail = (currentScore, forecastScore, currentNextReward, foreca
         div.classList.toggle("forecast-target", isForecastTarget);
 
         div.innerHTML = `
-            <div class="reward-dot">${item.icon}</div>
+            <div class="reward-dot" aria-hidden="true">${item.icon}</div>
             <div class="reward-name">${getRewardName(item)}</div>
             <div class="reward-threshold">${formatFloor(item.threshold)}</div>
         `;
@@ -225,7 +282,7 @@ const calculate = () => {
 
     const totalScore = myScore + teammateScore;
     const remainingCoins = myCoins + teammateCoins;
-    const forecastAddScore = remainingCoins * POINT_PER_COIN;
+    const forecastAddScore = remainingCoins * getPointPerCoin();
     const forecastScore = totalScore + forecastAddScore;
 
     const currentData = getProgressData(totalScore);
@@ -255,48 +312,28 @@ const calculate = () => {
 const updateResult = (data) => {
     const { currentData: current, forecastData: forecast } = data;
 
-    const currentRailPercent = current.railPercent;
-    const forecastRailPercent = forecast.railPercent;
-    const forecastExtraPercent = Math.max(0, forecastRailPercent - currentRailPercent);
+    const forecastExtraPercent = Math.max(0, forecast.railPercent - current.railPercent);
 
-    const railFill = byId("railFill");
-    const railForecastFill = byId("railForecastFill");
-    const stageFill = byId("stageFill");
-    const stagePercent = byId("stagePercent");
-    const railStatusText = byId("railStatusText");
+    byId("railFill").style.width = `${current.railPercent}%`;
+    byId("railForecastFill").style.left = `${current.railPercent}%`;
+    byId("railForecastFill").style.width = `${forecastExtraPercent}%`;
 
-    if (railFill) {
-        railFill.style.left = "0%";
-        railFill.style.width = `${currentRailPercent}%`;
-    }
-
-    if (railForecastFill) {
-        railForecastFill.style.left = `${currentRailPercent}%`;
-        railForecastFill.style.width = `${forecastExtraPercent}%`;
-    }
-
-    if (stageFill) {
-        stageFill.style.width = `${current.stagePercent}%`;
-    }
-
-    if (stagePercent) {
-        stagePercent.textContent = `${formatDecimal(current.stagePercent, 1)}%`;
-    }
-
-    if (railStatusText) {
-        railStatusText.textContent = t("railStatus", {
-            current: formatDecimal(current.railPercent, 1),
-            forecast: formatDecimal(forecast.railPercent, 1)
-        });
-    }
+    byId("stageFill").style.width = `${current.stagePercent}%`;
+    byId("stagePercent").textContent = `${formatDecimal(current.stagePercent, 1)}%`;
+    byId("railStatusText").textContent = t("railStatus", {
+        current: formatDecimal(current.railPercent, 1),
+        forecast: formatDecimal(forecast.railPercent, 1)
+    });
 
     updateCurrentSection(data, current);
     updateForecastSection(data, forecast);
 };
 
 const updateCurrentSection = (data, current) => {
+    const total = getRewards().length;
+
     byId("currentTotalScoreText").textContent = formatFloor(data.totalScore);
-    byId("currentLevelText").textContent = `${current.currentLevel} / ${rewards.length}`;
+    byId("currentLevelText").textContent = `${current.currentLevel} / ${total}`;
 
     if (current.completed) {
         byId("needScoreText").textContent = "0";
@@ -318,14 +355,14 @@ const updateCurrentSection = (data, current) => {
 const updateForecastSection = (data, forecast) => {
     byId("forecastAddScoreText").textContent = formatFloor(data.forecastAddScore);
     byId("forecastTotalScoreText").textContent = formatFloor(data.forecastScore);
-    byId("forecastLevelText").textContent = `${forecast.currentLevel} / ${rewards.length}`;
+    byId("forecastLevelText").textContent = `${forecast.currentLevel} / ${getRewards().length}`;
 
     if (forecast.completed) {
         byId("forecastNeedText").textContent = t("completed");
         return;
     }
 
-    const forecastNeedCoins = Math.ceil(forecast.needScore / POINT_PER_COIN);
+    const forecastNeedCoins = Math.ceil(forecast.needScore / getPointPerCoin());
 
     byId("forecastNeedText").textContent =
         `${formatInt(forecast.needScore)} ${t("scoreUnit")} / ${formatInt(forecastNeedCoins)} ${t("coinUnit")}`;
@@ -361,6 +398,7 @@ const updateStrategySuggestion = (remainingCoins) => {
     }
 
     strategyStatusText.textContent = t(statusKey);
+    strategyList.hidden = steps.length === 0;
 
     const fragment = document.createDocumentFragment();
 
@@ -373,17 +411,9 @@ const updateStrategySuggestion = (remainingCoins) => {
     strategyList.appendChild(fragment);
 };
 
-const resetAll = () => {
-    inputIds.forEach((id) => {
-        const input = byId(id);
-        if (input) input.value = 0;
-    });
+/* State: one saved slot per mode (and per round for Speed Stars) */
 
-    localStorage.removeItem(STORAGE_KEY);
-    calculate();
-};
-
-window.resetAll = resetAll;
+const getStorageKey = () => getModeConfig().storageKey(getRound());
 
 const saveState = () => {
     const state = inputIds.reduce((acc, id) => {
@@ -391,46 +421,152 @@ const saveState = () => {
         return acc;
     }, {});
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(getStorageKey(), JSON.stringify(state));
 };
 
 const loadState = () => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-
-    if (!raw) return;
+    let state = {};
 
     try {
-        const state = JSON.parse(raw);
-
-        inputIds.forEach((id) => {
-            const input = byId(id);
-
-            if (input && state[id] !== undefined) {
-                input.value = state[id];
-            }
-        });
+        state = JSON.parse(localStorage.getItem(getStorageKey()) || "{}") ?? {};
     } catch (error) {
         console.warn(t("loadStorageFailed"), error);
     }
-};
 
-const bindInputs = () => {
     inputIds.forEach((id) => {
         const input = byId(id);
-        if (!input) return;
+        if (input) input.value = state[id] ?? 0;
+    });
+};
 
-        input.addEventListener("input", calculate);
-        input.addEventListener("change", calculate);
+const resetAll = () => {
+    inputIds.forEach((id) => {
+        const input = byId(id);
+        if (input) input.value = 0;
+    });
+
+    localStorage.removeItem(getStorageKey());
+    calculate();
+};
+
+/* Mode & round switching */
+
+const syncHash = () => {
+    const hash = currentMode === "speed" ? `#speed-${currentRound}` : "#avalanche";
+    if (location.hash !== hash) history.replaceState(null, "", hash);
+};
+
+const readHash = () => {
+    const match = location.hash.match(/^#(avalanche|speed)(?:-(\d))?$/);
+    if (!match) return;
+
+    currentMode = match[1];
+    const round = Number(match[2]);
+    if (MODES.speed.rounds[round]) currentRound = round;
+};
+
+const renderSwitches = () => {
+    document.documentElement.dataset.mode = currentMode;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", getModeConfig().themeColor);
+
+    $$("[data-mode-tab]").forEach((tab) => {
+        const active = tab.dataset.modeTab === currentMode;
+        tab.setAttribute("aria-selected", String(active));
+        tab.tabIndex = active ? 0 : -1;
+    });
+
+    const roundSwitch = byId("roundSwitch");
+    if (roundSwitch) roundSwitch.hidden = currentMode !== "speed";
+
+    $$("[data-round]").forEach((tab) => {
+        const active = Number(tab.dataset.round) === currentRound;
+        tab.setAttribute("aria-selected", String(active));
+        tab.tabIndex = active ? 0 : -1;
+    });
+};
+
+const refreshView = () => {
+    renderSwitches();
+    loadState();
+    applyI18n();
+    calculate();
+    syncHash();
+};
+
+const switchTo = (mode, round = currentRound) => {
+    if (mode === currentMode && round === currentRound) return;
+
+    saveState();
+    currentMode = mode;
+    currentRound = round;
+
+    localStorage.setItem(MODE_STORAGE_KEY, currentMode);
+    localStorage.setItem(SPEED_ROUND_STORAGE_KEY, String(currentRound));
+
+    refreshView();
+};
+
+const bindTablist = (container, onPick) => {
+    if (!container) return;
+
+    const tabs = () => [...container.querySelectorAll('[role="tab"]')];
+
+    container.addEventListener("click", (event) => {
+        const tab = event.target.closest('[role="tab"]');
+        if (tab) onPick(tab);
+    });
+
+    container.addEventListener("keydown", (event) => {
+        const list = tabs();
+        const index = list.indexOf(document.activeElement);
+        if (index < 0) return;
+
+        const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+        if (!step) return;
+
+        event.preventDefault();
+        const next = list[(index + step + list.length) % list.length];
+        onPick(next);
+        next.focus();
+    });
+};
+
+const bindControls = () => {
+    inputIds.forEach((id) => {
+        byId(id)?.addEventListener("input", calculate);
+    });
+
+    byId("clearButton")?.addEventListener("click", resetAll);
+
+    bindTablist(byId("modeSwitch"), (tab) => switchTo(tab.dataset.modeTab));
+    bindTablist(byId("roundSwitch"), (tab) => switchTo("speed", Number(tab.dataset.round)));
+
+    window.addEventListener("hashchange", () => {
+        saveState();
+        readHash();
+        refreshView();
+    });
+
+    const languageSelect = byId("languageSelect");
+    if (!languageSelect) return;
+
+    languageSelect.value = currentLang;
+    languageSelect.addEventListener("change", () => {
+        currentLang = languageSelect.value;
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLang);
+        applyI18n();
+        calculate();
     });
 };
 
 const initApp = async () => {
     await loadI18nJson();
 
-    loadState();
-    initLanguage();
-    bindInputs();
-    calculate();
+    if (!MODES.speed.rounds[currentRound]) currentRound = 1;
+    readHash();
+
+    bindControls();
+    refreshView();
 };
 
 document.addEventListener("DOMContentLoaded", initApp);

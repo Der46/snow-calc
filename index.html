@@ -1,26 +1,43 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-mode="avalanche">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>雪崩派對進度計算機</title>
-    <meta name="theme-color" content="#42c8ff" />
+    <meta name="theme-color" content="#3aa8ef" />
 
     <link rel="icon" type="image/svg+xml" href="icon.svg" />
     <link rel="apple-touch-icon" href="icon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Noto+Sans+TC:wght@500;700;900&display=swap" />
+
     <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <div class="snow-layer"></div>
+    <div class="backdrop" aria-hidden="true">
+        <div class="snow-layer"></div>
+        <div class="speed-lines"></div>
+    </div>
 
     <main class="app">
         <section class="hero">
             <div class="top-actions">
-                <div class="badge" data-i18n="badge">❄️ 雪崩派對</div>
+                <div class="mode-switch" id="modeSwitch" role="tablist" data-i18n-label="modeSwitch">
+                    <button type="button" role="tab" class="mode-tab" data-mode-tab="avalanche" aria-selected="true">
+                        <span class="mode-icon" aria-hidden="true">❄️</span>
+                        <span data-i18n="modeAvalanche">雪崩派對</span>
+                    </button>
+                    <button type="button" role="tab" class="mode-tab" data-mode-tab="speed" aria-selected="false">
+                        <span class="mode-icon" aria-hidden="true">🏁</span>
+                        <span data-i18n="modeSpeed">極速之星</span>
+                    </button>
+                </div>
 
                 <select id="languageSelect" class="language-select" aria-label="Language">
                     <option value="zh-Hant">繁體中文</option>
@@ -35,15 +52,25 @@
                 </select>
             </div>
 
-            <h1 data-i18n="heroTitle">進度與雪幣期望計算機</h1>
+            <div class="hero-body">
+                <div class="badge" data-i18n="badge">❄️ 雪崩派對</div>
+                <h1 data-i18n="heroTitle">進度與雪幣期望計算機</h1>
+                <p class="credit" data-i18n="credit">大佬群CSL製作</p>
 
-            <p class="subtitle" data-i18n="subtitle">
-                輸入自己與隊友目前的分數，以及雙方剩餘雪幣，系統會自動加總隊伍分數，
-                判斷下一階段獎勵，並預估把剩餘雪幣跑完後可以到達的估計總分。
-            </p>
+                <p class="subtitle" data-i18n="subtitle">
+                    輸入自己與隊友目前的分數，以及雙方剩餘雪幣，系統會自動加總隊伍分數，
+                    判斷下一階段獎勵，並預估把剩餘雪幣跑完後可以到達的估計總分。
+                </p>
+            </div>
 
-            <div class="fixed-rate" data-i18n="fixedRate">
-                ❄️ 固定換算：1 雪幣 ≈ 26 分
+            <div class="hero-foot">
+                <div class="fixed-rate" data-i18n="fixedRate">❄️ 固定換算：1 雪幣 ≈ 26 分</div>
+
+                <div class="round-switch" id="roundSwitch" role="tablist" data-i18n-label="roundSwitch" hidden>
+                    <button type="button" role="tab" class="round-tab" data-round="1">第 1 回合</button>
+                    <button type="button" role="tab" class="round-tab" data-round="2">第 2 回合</button>
+                    <button type="button" role="tab" class="round-tab" data-round="3">第 3 回合</button>
+                </div>
             </div>
         </section>
 
@@ -82,7 +109,7 @@
             <div class="stage-progress">
                 <div class="stage-top">
                     <span id="stageTitle">下一階段：金槌</span>
-                    <span id="stagePercent">0%</span>
+                    <span id="stagePercent" class="num">0%</span>
                 </div>
 
                 <div class="stage-bar">
@@ -146,7 +173,7 @@
                     </div>
 
                     <div class="clear-row">
-                        <button type="button" onclick="resetAll()" data-i18n="clearAll">清空全部</button>
+                        <button type="button" id="clearButton" class="clear-button" data-i18n="clearAll">清空全部</button>
                     </div>
                 </div>
 
@@ -157,9 +184,14 @@
                     </div>
 
                     <div class="metric-grid">
-                        <div class="metric good">
+                        <div class="metric hero-metric">
                             <div class="name" data-i18n="currentTotalScore">目前總分</div>
                             <div class="value" id="currentTotalScoreText">0</div>
+                        </div>
+
+                        <div class="metric hero-metric forecast">
+                            <div class="name" data-i18n="forecastTotalScore">估計總分</div>
+                            <div class="value" id="forecastTotalScoreText">0</div>
                         </div>
 
                         <div class="metric warn">
@@ -182,17 +214,7 @@
                             <div class="value" id="forecastAddScoreText">0</div>
                         </div>
 
-                        <div class="metric forecast">
-                            <div class="name" data-i18n="forecastTotalScore">估計總分</div>
-                            <div class="value" id="forecastTotalScoreText">0</div>
-                        </div>
-
-                        <div class="metric warn wide">
-                            <div class="name" data-i18n="forecastNeedNextStage">預估後距離下一階段</div>
-                            <div class="value" id="forecastNeedText">4,000 分 / 154 幣</div>
-                        </div>
-
-                        <div class="metric forecast">
+                        <div class="metric">
                             <div class="name" data-i18n="currentReachedStage">目前已達階段</div>
                             <div class="value" id="currentLevelText">0 / 15</div>
                         </div>
@@ -200,6 +222,11 @@
                         <div class="metric forecast">
                             <div class="name" data-i18n="forecastReachedStage">預估可達階段</div>
                             <div class="value" id="forecastLevelText">0 / 15</div>
+                        </div>
+
+                        <div class="metric warn wide">
+                            <div class="name" data-i18n="forecastNeedNextStage">預估後距離下一階段</div>
+                            <div class="value" id="forecastNeedText">4,000 分 / 154 幣</div>
                         </div>
                     </div>
 
@@ -225,9 +252,9 @@
             </div>
         </section>
 
-        <div class="footer" data-i18n="footer">
-            &copy; Coin999 - 長長久久 隊伍
-        </div>
+        <footer class="footer" data-i18n="footer">
+            &copy; 2026 大佬群CSL製作
+        </footer>
     </main>
 
     <script src="app.js"></script>
