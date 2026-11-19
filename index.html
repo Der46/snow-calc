@@ -26,7 +26,7 @@
     </div>
 
     <main class="app">
-        <section class="hero">
+        <header class="topbar">
             <div class="top-actions">
                 <div class="mode-switch" id="modeSwitch" role="tablist" data-i18n-label="modeSwitch">
                     <button type="button" role="tab" class="mode-tab" data-mode-tab="avalanche" aria-selected="true">
@@ -51,16 +51,11 @@
                     <option value="pt-BR">Português BR</option>
                 </select>
             </div>
+        </header>
 
+        <section class="hero">
             <div class="hero-body">
-                <div class="badge" data-i18n="badge">❄️ 雪崩派對</div>
-                <h1 data-i18n="heroTitle">進度與雪幣期望計算機</h1>
-                <p class="credit" data-i18n="credit">大佬群CSL製作</p>
-
-                <p class="subtitle" data-i18n="subtitle">
-                    輸入自己與隊友目前的分數，以及雙方剩餘雪幣，系統會自動加總隊伍分數，
-                    判斷下一階段獎勵，並預估把剩餘雪幣跑完後可以到達的估計總分。
-                </p>
+                <p class="credit-stamp"><span data-i18n="credit">大佬群CSL製作</span></p>
             </div>
 
             <div class="hero-foot">
@@ -252,8 +247,14 @@
             </div>
         </section>
 
-        <footer class="footer" data-i18n="footer">
-            &copy; 2026 大佬群CSL製作
+        <footer class="footer">
+            <p data-i18n="footer">&copy; 2026 大佬群CSL製作</p>
+            <a class="contact-link"
+                href="https://line.me/ti/g2/vFTIlDhsyEN9wo0SYbIpDBL9AsHbK-mbHTS5YA?utm_source=invitation&amp;utm_medium=link_copy&amp;utm_campaign=default"
+                target="_blank" rel="noopener noreferrer">
+                <span class="contact-icon" aria-hidden="true">💬</span>
+                <span data-i18n="contactDev">聯絡網頁開發者：加入 LINE 群組後標記 @CSL</span>
+            </a>
         </footer>
     </main>
 
