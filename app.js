@@ -152,6 +152,8 @@ const t = (key, params = {}) => {
     return text;
 };
 
+const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const applyI18n = () => {
     document.documentElement.lang = currentLang;
     document.title = t("pageTitle");
@@ -160,7 +162,19 @@ const applyI18n = () => {
         element.textContent = t(element.dataset.i18n);
     });
 
-    $$("[data-i18n-label]").forEach((element) => {
+    // Bold selected terms (e.g. "LINE|@CSL") without injecting HTML
+    $$("[data-i18n-strong]").forEach((element) => {
+        const terms = element.dataset.i18nStrong.split("|");
+        const parts = element.textContent.split(new RegExp(`(${terms.map(escapeRegExp).join("|")})`));
+        element.replaceChildren(...parts.filter(Boolean).map((part) => {
+            if (!terms.includes(part)) return document.createTextNode(part);
+            const strong = document.createElement("strong");
+            strong.textContent = part;
+            return strong;
+        }));
+    });
+
+    $("[data-i18n-label]").forEach((element) => {
         element.setAttribute("aria-label", t(element.dataset.i18nLabel));
     });
 
