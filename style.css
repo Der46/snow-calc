@@ -47,7 +47,6 @@
     --stamp-ink: #1d6fe0;
     --stamp-bg: rgba(234, 246, 255, 0.92);
     --stamp-shadow: rgba(29, 111, 224, 0.22);
-    --topbar-bg: rgba(191, 233, 255, 0.72);
 }
 
 /* Speed Stars: sunny race day, sticker-outlined cards */
@@ -85,7 +84,6 @@
     --stamp-ink: #d91f28;
     --stamp-bg: #fff6da;
     --stamp-shadow: #1c1647;
-    --topbar-bg: rgba(255, 210, 63, 0.78);
 }
 
 /* =========================================================
@@ -239,12 +237,34 @@ body {
    Hero
    ========================================================= */
 
+/* Title bar: stamp, event switch, language, rate and rounds in one sticky card */
 .hero {
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 20;
     overflow: hidden;
-    padding: 22px 28px 26px;
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    grid-template-areas:
+        "stamp mode . lang"
+        "rate rate rounds rounds";
+    align-items: center;
+    column-gap: 18px;
+    row-gap: 14px;
+    padding: 16px 22px;
+    background: var(--surface-solid);
     margin-bottom: 22px;
 }
+
+.hero > * {
+    position: relative;
+}
+
+.credit-stamp { grid-area: stamp; }
+.mode-switch { grid-area: mode; }
+.language-select { grid-area: lang; }
+.fixed-rate { grid-area: rate; justify-self: start; }
+.round-switch { grid-area: rounds; justify-self: end; }
 
 /* Avalanche: soft sun glow. Speed: checkered flag strip. */
 .hero::before {
@@ -260,7 +280,7 @@ body {
 }
 
 [data-mode="speed"] .hero {
-    padding-top: 40px;
+    padding-top: 28px;
 }
 
 [data-mode="speed"] .hero::before {
@@ -268,32 +288,11 @@ body {
     left: 0;
     right: 0;
     width: auto;
-    height: 18px;
+    height: 12px;
     border-radius: 0;
     border-bottom: 2.5px solid var(--ink);
     background:
-        conic-gradient(var(--ink) 25%, #ffffff 0 50%, var(--ink) 0 75%, #ffffff 0) 0 0 / 18px 18px;
-}
-
-.topbar {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    margin: 0 -8px 18px;
-    padding: 10px 8px;
-    background: var(--topbar-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
-}
-
-.top-actions {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+        conic-gradient(var(--ink) 25%, #ffffff 0 50%, var(--ink) 0 75%, #ffffff 0) 0 0 / 12px 12px;
 }
 
 /* Event switcher */
@@ -351,11 +350,6 @@ body {
     cursor: pointer;
 }
 
-.hero-body {
-    position: relative;
-    padding: 4px 0 2px 4px;
-}
-
 /* Watermark stamp: tilted rectangle, double-ruled like an ink seal */
 .credit-stamp {
     display: inline-block;
@@ -365,6 +359,7 @@ body {
     border-radius: 4px;
     background: var(--stamp-bg);
     color: var(--stamp-ink);
+    justify-self: start;
     transform: rotate(-4deg);
     box-shadow: 3px 3px 0 var(--stamp-shadow);
 }
@@ -378,16 +373,6 @@ body {
     font-weight: 900;
     letter-spacing: 0.12em;
     white-space: nowrap;
-}
-
-.hero-foot {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 20px;
 }
 
 .fixed-rate {
@@ -997,17 +982,36 @@ input:focus {
     }
 
     .hero {
-        padding: 16px 16px 18px;
+        top: 0;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "stamp lang"
+            "mode mode"
+            "rate rate"
+            "rounds rounds";
+        column-gap: 10px;
+        row-gap: 10px;
+        padding: 12px;
         margin-bottom: 14px;
     }
 
     [data-mode="speed"] .hero {
-        padding-top: 30px;
+        padding-top: 22px;
     }
 
-    [data-mode="speed"] .hero::before {
-        height: 14px;
-        background-size: 14px 14px;
+    .credit-stamp span {
+        padding: 4px 12px;
+        font-size: 14px;
+    }
+
+    .fixed-rate {
+        justify-self: stretch;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .round-switch {
+        justify-self: stretch;
     }
 
     .panel {
@@ -1015,28 +1019,22 @@ input:focus {
         margin-bottom: 14px;
     }
 
-    .top-actions {
-        gap: 10px;
-    }
-
     .mode-switch {
-        flex: 1 1 100%;
+        display: flex;
     }
 
     .mode-tab {
         flex: 1;
         justify-content: center;
-        padding: 8px 10px;
+        min-height: 40px;
+        padding: 6px 10px;
         font-size: 14px;
     }
 
     .language-select {
+        min-height: 40px;
+        padding: 6px 10px;
         font-size: 13px;
-    }
-
-    .hero-foot {
-        flex-direction: column;
-        align-items: stretch;
     }
 
     .round-switch {
@@ -1047,7 +1045,8 @@ input:focus {
     }
 
     .round-tab {
-        padding: 8px 4px;
+        min-height: 40px;
+        padding: 6px 4px;
         font-size: 14px;
     }
 

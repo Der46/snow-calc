@@ -26,48 +26,40 @@
     </div>
 
     <main class="app">
-        <header class="topbar">
-            <div class="top-actions">
-                <div class="mode-switch" id="modeSwitch" role="tablist" data-i18n-label="modeSwitch">
-                    <button type="button" role="tab" class="mode-tab" data-mode-tab="avalanche" aria-selected="true">
-                        <span class="mode-icon" aria-hidden="true">❄️</span>
-                        <span data-i18n="modeAvalanche">雪崩派對</span>
-                    </button>
-                    <button type="button" role="tab" class="mode-tab" data-mode-tab="speed" aria-selected="false">
-                        <span class="mode-icon" aria-hidden="true">🏁</span>
-                        <span data-i18n="modeSpeed">極速之星</span>
-                    </button>
-                </div>
+        <header class="hero">
+            <p class="credit-stamp"><span data-i18n="credit">大佬群CSL製作</span></p>
 
-                <select id="languageSelect" class="language-select" aria-label="Language">
-                    <option value="zh-Hant">繁體中文</option>
-                    <option value="en">English</option>
-                    <option value="vi">Tiếng Việt</option>
-                    <option value="ja">日本語</option>
-                    <option value="ko">한국어</option>
-                    <option value="th">ไทย</option>
-                    <option value="id">Bahasa Indonesia</option>
-                    <option value="es">Español</option>
-                    <option value="pt-BR">Português BR</option>
-                </select>
+            <div class="mode-switch" id="modeSwitch" role="tablist" data-i18n-label="modeSwitch">
+                <button type="button" role="tab" class="mode-tab" data-mode-tab="avalanche" aria-selected="true">
+                    <span class="mode-icon" aria-hidden="true">❄️</span>
+                    <span data-i18n="modeAvalanche">雪崩派對</span>
+                </button>
+                <button type="button" role="tab" class="mode-tab" data-mode-tab="speed" aria-selected="false">
+                    <span class="mode-icon" aria-hidden="true">🏁</span>
+                    <span data-i18n="modeSpeed">極速之星</span>
+                </button>
+            </div>
+
+            <select id="languageSelect" class="language-select" aria-label="Language">
+                <option value="zh-Hant">繁體中文</option>
+                <option value="en">English</option>
+                <option value="vi">Tiếng Việt</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="th">ไทย</option>
+                <option value="id">Bahasa Indonesia</option>
+                <option value="es">Español</option>
+                <option value="pt-BR">Português BR</option>
+            </select>
+
+            <div class="fixed-rate" data-i18n="fixedRate">❄️ 固定換算：1 雪幣 ≈ 26 分</div>
+
+            <div class="round-switch" id="roundSwitch" role="tablist" data-i18n-label="roundSwitch" hidden>
+                <button type="button" role="tab" class="round-tab" data-round="1">第 1 回合</button>
+                <button type="button" role="tab" class="round-tab" data-round="2">第 2 回合</button>
+                <button type="button" role="tab" class="round-tab" data-round="3">第 3 回合</button>
             </div>
         </header>
-
-        <section class="hero">
-            <div class="hero-body">
-                <p class="credit-stamp"><span data-i18n="credit">大佬群CSL製作</span></p>
-            </div>
-
-            <div class="hero-foot">
-                <div class="fixed-rate" data-i18n="fixedRate">❄️ 固定換算：1 雪幣 ≈ 26 分</div>
-
-                <div class="round-switch" id="roundSwitch" role="tablist" data-i18n-label="roundSwitch" hidden>
-                    <button type="button" role="tab" class="round-tab" data-round="1">第 1 回合</button>
-                    <button type="button" role="tab" class="round-tab" data-round="2">第 2 回合</button>
-                    <button type="button" role="tab" class="round-tab" data-round="3">第 3 回合</button>
-                </div>
-            </div>
-        </section>
 
         <section class="panel reward-panel">
             <div class="section-title">
