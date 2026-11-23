@@ -174,7 +174,7 @@ const applyI18n = () => {
         }));
     });
 
-    $("[data-i18n-label]").forEach((element) => {
+    $$("[data-i18n-label]").forEach((element) => {
         element.setAttribute("aria-label", t(element.dataset.i18nLabel));
     });
 
