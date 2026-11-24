@@ -101,7 +101,10 @@ const getPointPerCoin = () => getModeConfig().pointPerCoin;
 
 const loadI18nJson = async () => {
     try {
-        const response = await fetch(I18N_JSON_PATH, { cache: "no-store" });
+        const response = await fetch(I18N_JSON_PATH, {
+            cache: "no-store",
+            signal: AbortSignal.timeout(8000)
+        });
 
         if (!response.ok) {
             throw new Error(`Failed to load ${I18N_JSON_PATH}: ${response.status}`);
@@ -258,11 +261,15 @@ const renderRewardRail = (currentScore, forecastScore, currentNextReward, foreca
 
     const rewards = getRewards();
     rewardList.closest(".reward-rail")?.style.setProperty("--steps", rewards.length);
-    rewardList.innerHTML = "";
 
-    const fragment = document.createDocumentFragment();
+    const makePart = (className, text) => {
+        const part = document.createElement("div");
+        part.className = className;
+        part.textContent = text;
+        return part;
+    };
 
-    rewards.forEach((item, index) => {
+    const steps = rewards.map((item, index) => {
         const done = currentScore >= item.threshold;
         const forecast = !done && forecastScore >= item.threshold;
         const isNext = currentNextReward === item;
@@ -276,16 +283,19 @@ const renderRewardRail = (currentScore, forecastScore, currentNextReward, foreca
         div.classList.toggle("next", isNext);
         div.classList.toggle("forecast-target", isForecastTarget);
 
-        div.innerHTML = `
-            <div class="reward-dot" aria-hidden="true">${item.icon}</div>
-            <div class="reward-name">${getRewardName(item)}</div>
-            <div class="reward-threshold">${formatFloor(item.threshold)}</div>
-        `;
+        const dot = makePart("reward-dot", item.icon);
+        dot.setAttribute("aria-hidden", "true");
 
-        fragment.appendChild(div);
+        div.replaceChildren(
+            dot,
+            makePart("reward-name", getRewardName(item)),
+            makePart("reward-threshold", formatFloor(item.threshold))
+        );
+
+        return div;
     });
 
-    rewardList.appendChild(fragment);
+    rewardList.replaceChildren(...steps);
 };
 
 const calculate = () => {
@@ -332,7 +342,7 @@ const updateResult = (data) => {
     byId("railForecastFill").style.left = `${current.railPercent}%`;
     byId("railForecastFill").style.width = `${forecastExtraPercent}%`;
 
-    byId("stageFill").style.width = `${current.stagePercent}%`;
+    byId("stageFill").value = current.stagePercent;
     byId("stagePercent").textContent = `${formatDecimal(current.stagePercent, 1)}%`;
     byId("railStatusText").textContent = t("railStatus", {
         current: formatDecimal(current.railPercent, 1),
@@ -388,8 +398,6 @@ const updateStrategySuggestion = (remainingCoins) => {
 
     if (!strategyStatusText || !strategyList) return;
 
-    strategyList.innerHTML = "";
-
     let statusKey = "strategyStatusLow";
     let steps = [];
 
@@ -414,15 +422,11 @@ const updateStrategySuggestion = (remainingCoins) => {
     strategyStatusText.textContent = t(statusKey);
     strategyList.hidden = steps.length === 0;
 
-    const fragment = document.createDocumentFragment();
-
-    steps.forEach((step) => {
+    strategyList.replaceChildren(...steps.map((step) => {
         const li = document.createElement("li");
         li.textContent = step;
-        fragment.appendChild(li);
-    });
-
-    strategyList.appendChild(fragment);
+        return li;
+    }));
 };
 
 /* State: one saved slot per mode (and per round for Speed Stars) */
@@ -430,11 +434,11 @@ const updateStrategySuggestion = (remainingCoins) => {
 const getStorageKey = () => getModeConfig().storageKey(getRound());
 
 const saveState = () => {
-    const state = inputIds.reduce((acc, id) => {
-        acc[id] = byId(id)?.value ?? 0;
-        return acc;
-    }, {});
+    const form = byId("scoreForm");
+    if (!form) return;
 
+    // Input names match the saved keys: myScore, teammateScore, myCoins, teammateCoins
+    const state = Object.fromEntries(new FormData(form));
     localStorage.setItem(getStorageKey(), JSON.stringify(state));
 };
 
@@ -454,10 +458,8 @@ const loadState = () => {
 };
 
 const resetAll = () => {
-    inputIds.forEach((id) => {
-        const input = byId(id);
-        if (input) input.value = 0;
-    });
+    // Native reset restores each input's default value="0"
+    byId("scoreForm")?.reset();
 
     localStorage.removeItem(getStorageKey());
     calculate();
@@ -483,19 +485,15 @@ const renderSwitches = () => {
     document.documentElement.dataset.mode = currentMode;
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", getModeConfig().themeColor);
 
-    $$("[data-mode-tab]").forEach((tab) => {
-        const active = tab.dataset.modeTab === currentMode;
-        tab.setAttribute("aria-selected", String(active));
-        tab.tabIndex = active ? 0 : -1;
+    $$('input[name="mode"]').forEach((radio) => {
+        radio.checked = radio.value === currentMode;
     });
 
     const roundSwitch = byId("roundSwitch");
     if (roundSwitch) roundSwitch.hidden = currentMode !== "speed";
 
-    $$("[data-round]").forEach((tab) => {
-        const active = Number(tab.dataset.round) === currentRound;
-        tab.setAttribute("aria-selected", String(active));
-        tab.tabIndex = active ? 0 : -1;
+    $$('input[name="round"]').forEach((radio) => {
+        radio.checked = Number(radio.value) === currentRound;
     });
 };
 
@@ -520,40 +518,27 @@ const switchTo = (mode, round = currentRound) => {
     refreshView();
 };
 
-const bindTablist = (container, onPick) => {
-    if (!container) return;
+// Keep focused fields clear of the sticky title bar (WCAG 2.4.11)
+const trackHeroHeight = () => {
+    const hero = document.querySelector(".hero");
+    if (!hero) return;
 
-    const tabs = () => [...container.querySelectorAll('[role="tab"]')];
-
-    container.addEventListener("click", (event) => {
-        const tab = event.target.closest('[role="tab"]');
-        if (tab) onPick(tab);
-    });
-
-    container.addEventListener("keydown", (event) => {
-        const list = tabs();
-        const index = list.indexOf(document.activeElement);
-        if (index < 0) return;
-
-        const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
-        if (!step) return;
-
-        event.preventDefault();
-        const next = list[(index + step + list.length) % list.length];
-        onPick(next);
-        next.focus();
-    });
+    new ResizeObserver(([entry]) => {
+        const height = entry.borderBoxSize?.[0]?.blockSize ?? hero.offsetHeight;
+        document.documentElement.style.setProperty("--hero-h", `${Math.ceil(height)}px`);
+    }).observe(hero);
 };
 
 const bindControls = () => {
-    inputIds.forEach((id) => {
-        byId(id)?.addEventListener("input", calculate);
-    });
+    const scoreForm = byId("scoreForm");
+    scoreForm?.addEventListener("input", calculate);
+    scoreForm?.addEventListener("submit", (event) => event.preventDefault());
 
     byId("clearButton")?.addEventListener("click", resetAll);
 
-    bindTablist(byId("modeSwitch"), (tab) => switchTo(tab.dataset.modeTab));
-    bindTablist(byId("roundSwitch"), (tab) => switchTo("speed", Number(tab.dataset.round)));
+    // Native radio groups give arrow-key navigation and selection for free
+    byId("modeSwitch")?.addEventListener("change", (event) => switchTo(event.target.value));
+    byId("roundSwitch")?.addEventListener("change", (event) => switchTo("speed", Number(event.target.value)));
 
     window.addEventListener("hashchange", () => {
         saveState();
@@ -580,6 +565,7 @@ const initApp = async () => {
     readHash();
 
     bindControls();
+    trackHeroHeight();
     refreshView();
 };
 

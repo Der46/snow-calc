@@ -101,8 +101,15 @@ body {
     min-height: 100%;
 }
 
+/* Focused fields scroll into view below the sticky title bar */
+html {
+    scroll-padding-top: calc(var(--hero-h, 140px) + 12px);
+}
+
 body {
     font-family: var(--font-body);
+    /* Keep fallback fonts at the web font's x-height while Google Fonts load */
+    font-size-adjust: from-font;
     color: var(--ink);
     background: var(--bg);
     background-attachment: fixed;
@@ -111,6 +118,47 @@ body {
 }
 
 :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* Segmented controls: native radio groups inside fieldsets */
+.mode-switch,
+.round-switch {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-inline-size: 0;
+}
+
+.mode-tab,
+.round-tab {
+    position: relative;
+}
+
+.mode-tab input,
+.round-tab input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.mode-tab:has(input:focus-visible),
+.round-tab:has(input:focus-visible) {
     outline: 3px solid var(--focus);
     outline-offset: 2px;
 }
@@ -327,7 +375,7 @@ body {
     color: var(--ink);
 }
 
-.mode-tab[aria-selected="true"] {
+.mode-tab:has(input:checked) {
     background: var(--tab-active-bg);
     color: var(--tab-active-ink);
 }
@@ -414,7 +462,7 @@ body {
     background: var(--next-soft);
 }
 
-.round-tab[aria-selected="true"] {
+.round-tab:has(input:checked) {
     background: var(--ink);
     color: #ffd23f;
     box-shadow: 3px 3px 0 #d91f28;
@@ -494,8 +542,7 @@ body {
 }
 
 .legend-dot.current,
-.rail-fill,
-.stage-fill {
+.rail-fill {
     background: linear-gradient(90deg, var(--current), var(--current-2));
 }
 
@@ -658,9 +705,14 @@ body {
     font-weight: 800;
 }
 
+/* Native <progress>, fully custom-styled */
 .stage-bar {
+    appearance: none;
+    display: block;
+    width: 100%;
     height: 18px;
-    overflow: hidden;
+    border: 0 solid;
+    overflow: clip;
     border-radius: 999px;
     background: var(--track);
 }
@@ -669,11 +721,19 @@ body {
     border: 2px solid var(--ink);
 }
 
-.stage-fill {
-    width: 0%;
-    height: 100%;
-    border-radius: inherit;
-    transition: width 0.45s var(--ease);
+.stage-bar::-webkit-progress-bar {
+    background: transparent;
+}
+
+.stage-bar::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--current), var(--current-2));
+    border-radius: 999px;
+    transition: inline-size 0.45s var(--ease);
+}
+
+.stage-bar::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--current), var(--current-2));
+    border-radius: 999px;
 }
 
 /* =========================================================

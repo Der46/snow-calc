@@ -29,16 +29,19 @@
         <header class="hero">
             <p class="credit-stamp"><span data-i18n="credit">大佬群CSL製作</span></p>
 
-            <div class="mode-switch" id="modeSwitch" role="tablist" data-i18n-label="modeSwitch">
-                <button type="button" role="tab" class="mode-tab" data-mode-tab="avalanche" aria-selected="true">
+            <fieldset class="mode-switch" id="modeSwitch">
+                <legend class="visually-hidden" data-i18n="modeSwitch">活動切換</legend>
+                <label class="mode-tab">
+                    <input type="radio" name="mode" value="avalanche" checked />
                     <span class="mode-icon" aria-hidden="true">❄️</span>
                     <span data-i18n="modeAvalanche">雪崩派對</span>
-                </button>
-                <button type="button" role="tab" class="mode-tab" data-mode-tab="speed" aria-selected="false">
+                </label>
+                <label class="mode-tab">
+                    <input type="radio" name="mode" value="speed" />
                     <span class="mode-icon" aria-hidden="true">🏁</span>
                     <span data-i18n="modeSpeed">極速之星</span>
-                </button>
-            </div>
+                </label>
+            </fieldset>
 
             <select id="languageSelect" class="language-select" aria-label="Language">
                 <option value="zh-Hant">繁體中文</option>
@@ -54,16 +57,17 @@
 
             <div class="fixed-rate" data-i18n="fixedRate">❄️ 固定換算：1 雪幣 ≈ 26 分</div>
 
-            <div class="round-switch" id="roundSwitch" role="tablist" data-i18n-label="roundSwitch" hidden>
-                <button type="button" role="tab" class="round-tab" data-round="1">第 1 回合</button>
-                <button type="button" role="tab" class="round-tab" data-round="2">第 2 回合</button>
-                <button type="button" role="tab" class="round-tab" data-round="3">第 3 回合</button>
-            </div>
+            <fieldset class="round-switch" id="roundSwitch" hidden>
+                <legend class="visually-hidden" data-i18n="roundSwitch">選擇回合</legend>
+                <label class="round-tab"><input type="radio" name="round" value="1" checked /><span data-round="1">第 1 回合</span></label>
+                <label class="round-tab"><input type="radio" name="round" value="2" /><span data-round="2">第 2 回合</span></label>
+                <label class="round-tab"><input type="radio" name="round" value="3" /><span data-round="3">第 3 回合</span></label>
+            </fieldset>
         </header>
 
         <section class="panel reward-panel">
             <div class="section-title">
-                <h2 data-i18n="rewardProgress">獎勵進度</h2>
+                <h2 id="rewardProgressHeading" data-i18n="rewardProgress">獎勵進度</h2>
                 <small id="railStatusText">目前 0%，預估 0%</small>
             </div>
 
@@ -82,7 +86,7 @@
                 </span>
             </div>
 
-            <div class="reward-rail-wrap">
+            <div class="reward-rail-wrap" role="region" tabindex="0" aria-labelledby="rewardProgressHeading">
                 <div class="reward-rail">
                     <div class="rail-line">
                         <div class="rail-forecast-fill" id="railForecastFill"></div>
@@ -99,9 +103,7 @@
                     <span id="stagePercent" class="num">0%</span>
                 </div>
 
-                <div class="stage-bar">
-                    <div class="stage-fill" id="stageFill"></div>
-                </div>
+                <progress class="stage-bar" id="stageFill" max="100" value="0" aria-labelledby="stageTitle"></progress>
             </div>
         </section>
 
@@ -111,9 +113,9 @@
             </div>
 
             <div class="dashboard-grid">
-                <div class="input-area">
+                <form class="input-area" id="scoreForm" aria-labelledby="teamScoreHeading">
                     <div class="block-title">
-                        <h3 data-i18n="teamScore">隊伍分數</h3>
+                        <h3 id="teamScoreHeading" data-i18n="teamScore">隊伍分數</h3>
                         <small data-i18n="autoSaveHint">輸入後即時計算並自動儲存</small>
                     </div>
 
@@ -127,12 +129,12 @@
                             <div class="player-input-fields">
                                 <div>
                                     <label for="myScore" data-i18n="currentScore">目前分數</label>
-                                    <input id="myScore" type="number" min="0" step="1" value="0" inputmode="numeric" />
+                                    <input id="myScore" name="myScore" enterkeyhint="next" type="number" min="0" step="1" value="0" inputmode="numeric" />
                                 </div>
 
                                 <div>
                                     <label for="myCoins" data-i18n="remainingCoins">剩餘雪幣</label>
-                                    <input id="myCoins" type="number" min="0" step="1" value="0" inputmode="numeric" />
+                                    <input id="myCoins" name="myCoins" enterkeyhint="next" type="number" min="0" step="1" value="0" inputmode="numeric" />
                                 </div>
                             </div>
                         </div>
@@ -146,13 +148,13 @@
                             <div class="player-input-fields">
                                 <div>
                                     <label for="teammateScore" data-i18n="currentScore">目前分數</label>
-                                    <input id="teammateScore" type="number" min="0" step="1" value="0"
+                                    <input id="teammateScore" name="teammateScore" enterkeyhint="next" type="number" min="0" step="1" value="0"
                                         inputmode="numeric" />
                                 </div>
 
                                 <div>
                                     <label for="teammateCoins" data-i18n="remainingCoins">剩餘雪幣</label>
-                                    <input id="teammateCoins" type="number" min="0" step="1" value="0"
+                                    <input id="teammateCoins" name="teammateCoins" enterkeyhint="done" type="number" min="0" step="1" value="0"
                                         inputmode="numeric" />
                                 </div>
                             </div>
@@ -162,7 +164,7 @@
                     <div class="clear-row">
                         <button type="button" id="clearButton" class="clear-button" data-i18n="clearAll">清空全部</button>
                     </div>
-                </div>
+                </form>
 
                 <div class="result-area">
                     <div class="block-title">
